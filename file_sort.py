@@ -1,6 +1,7 @@
 """ This script sorts the ASDAF Smoke Data by layer and year."""
 
 import os
+import sys
 
 layers = ["active_fires_10000", "active_fires_25000", "active_fires_50000", "active_fires_100000", "active_fires_500000", 
         "dust_cams_p50", "dust_cams_p75", "dust_cams_p95",
@@ -15,7 +16,7 @@ layers = ["active_fires_10000", "active_fires_25000", "active_fires_50000", "act
 years = [str(i) for i in range(2001, 2021)]
 
 # Creating Subfolders
-target_directory = "data"
+target_directory = sys.argv[2]
 
 if not os.path.exists(target_directory):
     os.mkdir(target_directory)
@@ -31,7 +32,7 @@ for layer in layers:
             os.mkdir(subfolder)
 
 # Moving Files
-source_directory = "data_derived"
+source_directory = sys.argv[1]
 
 for file in os.listdir(source_directory):
     for layer in layers:

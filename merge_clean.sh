@@ -7,6 +7,10 @@
 ### Current version only handles active_fires_10000, active_fires_25000, active_fires_50000, active_fires_100000, active_fires_500000.
 ### Update code for additional bands.
 
+# Set directory where the merged_files are located
+directory=$1
+cd $directory
+
 filename_1="active_fires_2001_2020.nc"
 filename_2="active_fires_2001_2020_compressed.nc"
 
