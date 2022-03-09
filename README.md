@@ -22,10 +22,8 @@ On Windows:
 
 To install and activate the required environment, type:
 ```
-% conda create -n smoke_data python=3.8
+% conda create -n smoke_data python=3.8 gdal nco
 % conda activate smoke_data
-% conda install gdal
-% conda install nco
 ```
 
 To deactivate the environment, type:
@@ -38,3 +36,11 @@ The following files are designed to sort, pre-process and merge the data. In ord
 1. file_sort.py - Sorts the ASDAF Smoke Data by layer and year
 2. batch_translate.sh - Calls netcdf_translate.sh on specific layers of the ASDAF Smoke Data and merges them into a single file spanning the entire 2001 to 2020 time period.
 3. merge_clean.sh - Merges the bands/layers of the ASDAF Smoke data into a single netCDF.
+
+### file_sort.py
+This script assumes that your files are stored in a flat structure (i.e. all daily files for each layer are stored in a single directory). It will create subfolders for each layer and within, it will create subfolders for each year. You can modify the layers by editing file_sort.py in your preferred editor.
+To run this script, you will need to parse in arguments the source and target destinations of where your files are located.
+```
+% python3 file_sort.py <source> <destination>
+```
+
