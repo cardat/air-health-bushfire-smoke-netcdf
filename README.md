@@ -41,6 +41,27 @@ The following files are designed to sort, pre-process and merge the data. In ord
 This script assumes that your files are stored in a flat structure (i.e. all daily files for each layer are stored in a single directory). It will create subfolders for each layer and within, it will create subfolders for each year. You can modify the layers by editing file_sort.py in your preferred editor.
 To run this script, you will need to parse in arguments the source and target destinations of where your files are located.
 ```
-% python3 file_sort.py <source> <destination>
+% python3 file_sort.py <source_directory> <destination_directory>
 ```
+
+### batch_translate.sh
+This script is used to translate specific layers of the ASDAF Smoke Data stored as geoTIFFs into the netCDF 4 format, then merges them into a single file spanning the entire 2001 to 2020 period. You can modify the time period by editing batch_translate.sh in your preferred editor.
+To run this script, you will need to parse in the source destination of where your sorted files are located and name of your layer.
+```
+% sh batch_translate.sh <source_directory> <layer_name>
+```
+
+### merge_clean.sh
+This script is used to merge multiple layers of the ASDAF Smoke Data located in ```/merged_files``` into a single netCDF 4 file, compresses it using d9 compression and then updates the file metadata to ensure CF compliance.
+
+09/03/2022 - Current version only supports active_fires_10000, active_fires_25000, active_fires_50000, active_fires_100000, active_fires_500000.
+             Please modify the code in your preferred editor as necessary to include more layers.
+             Placeholders have been used for updating the metadata.
+
+To run this script, you will need to parse in the directory of the merged files (e.g. ```/data/merged_files```).
+```
+% sh merge_clean.sh <source_directory>
+```
+
+
 
