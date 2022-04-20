@@ -1,4 +1,4 @@
-# smoke_data_Ivan
+# Bushfire smoke data sharing with netCDF
 
 ## Installation
 Miniforge makes it easier to manage the installation of Python, launch applications and manage packages and environments. To install Miniforge, please follow the most up to date instructions found in https://github.com/conda-forge/miniforge.
