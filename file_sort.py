@@ -1,4 +1,4 @@
-""" This script sorts the ASDAF Smoke Data by layer and year."""
+""" This script sorts the Bushfire Smoke Data by layer and year."""
 
 import os
 import sys
