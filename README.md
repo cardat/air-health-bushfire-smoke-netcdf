@@ -22,7 +22,7 @@ On Windows:
 
 To install and activate the required environment, type:
 ```
-% conda create -n smoke_data python=3.8 gdal nco
+% conda create -n smoke_data python=3.8 gdal nco cdo
 % conda activate smoke_data
 ```
 
