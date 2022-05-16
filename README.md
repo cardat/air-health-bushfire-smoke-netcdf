@@ -67,3 +67,9 @@ With R we can assign smoke levels to ABS census geographic units and use indicat
 
 ![do_extract_abs_sa1_launceston.png](do_extract_abs_sa1_launceston.png)
 
+And here is some maps of SA1 census geography units with spatially weighted PM2.5 and identified bushfire smoke areas:
+
+![do_map_abs_sa1_pm25_tas_20160122.png](do_map_abs_sa1_pm25_tas_20160122.png)
+
+![do_map_abs_sa1_pm25_bushfire_tas_20160122.png](do_map_abs_sa1_pm25_bushfire_tas_20160122.png)
+
