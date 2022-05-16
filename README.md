@@ -63,5 +63,7 @@ To run this script, you will need to parse in the directory of the merged files 
 % sh merge_clean.sh <source_directory>
 ```
 
+With R we can assign smoke levels to ABS census geographic units and use indicator flags of dust or active fire to identify probable smoke events (see `do_extract_abs_sa1.R`:
 
+![do_extract_abs_sa1_launceston.png](do_extract_abs_sa1_launceston.png)
 

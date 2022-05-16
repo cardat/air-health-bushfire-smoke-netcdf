@@ -85,12 +85,12 @@ with(sa1_toplot, plot(date, pm25_pred, type = "h", ylim = c(0,40)))
 # show the background PM
 with(sa1_toplot, lines(date, season_plus_trend, col = 'blue'))
 # show possible fire days
-fire_days <- sa1_toplot[smoke_2sd > 0 & active_fires_10000 > 0 & dust_merra_2_p95 == 0]
+fire_days <- sa1_toplot[smoke_2sd > 0 & active_fires_50000 > 0 & dust_merra_2_p95 == 0]
 with(fire_days, points(date, pm25_pred, col = 'red', pch = 16))
 # this filter seems too stringent, relax the active fires flag
 fire_days <- sa1_toplot[smoke_2sd > 0 & dust_merra_2_p95 == 0]
-with(fire_days, points(date, pm25_pred, col = 'red', pch = 16))
+with(fire_days, points(date, pm25_pred, col = 'orange', pch = 1))
 # show the bushfire specific PM
 with(fire_days, segments(date, pm25_pred, date, pm25_pred - remainder, lwd = 2, col = 'red'))
-legend("topleft", legend = c("PM2.5", "PM2.5 bushfire", "PM2.5 background"), lty = 1, col = c('black', 'red', 'blue'))
+legend("topleft", legend = c("PM2.5", "PM2.5 bushfire", "PM2.5 background", "probable smoke (fires in 50k)", "probable smoke (any non-dust)"), lty = c(1,1,1,NA,NA), pch = c(NA,NA,NA,16,1), col = c('black', 'red', 'blue', 'red', 'orange'))
 dev.off()
