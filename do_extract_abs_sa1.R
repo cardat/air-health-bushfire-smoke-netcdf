@@ -11,7 +11,7 @@ library(data.table)
 
 
 #### input ####
-infile <- "/home/287658c/ownCloud/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_2/data_netcdf/merged_files/bushfire_smoke_2001_2020_compressed_20220516.nc"
+infile <- "~/ownCloud/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_2/data_netcdf/merged_files/bushfire_smoke_2001_2020_compressed_20220516.nc"
 
 #### variables ####
 r_nc <- ncdf4::nc_open(infile)
