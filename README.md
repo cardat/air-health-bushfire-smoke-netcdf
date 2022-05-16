@@ -28,7 +28,7 @@ To install and activate the required environment, type:
 
 To deactivate the environment, type:
 ```
-% conda deactivate smoke_data
+% conda deactivate 
 ```
 
 ## Usage
@@ -54,9 +54,9 @@ To run this script, you will need to parse in the source destination of where yo
 ### merge_clean.sh
 This script is used to merge multiple layers of the ASDAF Smoke Data located in ```/merged_files``` into a single netCDF 4 file, compresses it using d9 compression and then updates the file metadata to ensure CF compliance.
 
-09/03/2022 - Current version only supports active_fires_10000, active_fires_25000, active_fires_50000, active_fires_100000, active_fires_500000.
-             Please modify the code in your preferred editor as necessary to include more layers.
-             Placeholders have been used for updating the metadata.
+09/03/2022 - Placeholders have been used for updating the metadata.
+
+IMPORTANT: there should be one file for EVERY time point or else you will get a message like `Warning: Input stream 1 has 7121 timesteps. Stream 5 has more timesteps, skipped!` and the data will not be correct.
 
 To run this script, you will need to parse in the directory of the merged files (e.g. ```/data/merged_files```).
 ```

@@ -32,6 +32,12 @@ ncatted -h -a _CoordinateAxisType,lat,d,, $filename_2
 #ncatted -h -a long_name,active_fires_500000,o,c,"active_fires: 500000 m resolution" $filename_2
 
 # Updating the attributes in the Global Section
-ncatted -h -a source,global,c,c,"Description of how the data was generated" $filename_2
-ncatted -h -a references,global,o,c,"Insert reference here" $filename_2
-ncatted -h -a comment,global,c,c,"Miscellaneous comments" $filename_2
+ncatted -h -a source,global,c,c,"The data was generated using a random forest model with satellite data, land use and other GIS layers as predictors of particulate matter (PM2.5) air pollution. A method of identifying specific pollution attributable to bushfires was applied that uses the seasonal trend decomposition algorithm (STL)." $filename_2
+ncatted -h -a references,global,o,c,"CAR Firesmoke Project Team 2021. Bushfire specific PM2.5 output from v1.2 based on satellite and other land use and other predictors for Australia 2001-2021 produced for the CAR Bushfire Smoke Exposures project. Downloaded from the Centre for Air pollution, energy and health Research." $filename_2
+ncatted -h -a comment,global,c,c,"This dataset is provided for use in a pilot project looking at building an API to optimise sharing of spatiotemporal gridded data output from satellite and other data modelling.
+
+Please note that this is still a preliminary dataset only as whilst there are several layers here (number predictors out of range, prediction out of range etc) but the pm25_pred is the predicted smoke particles (PM2.5) and future versions will have decomposed that into PM2.5_Bushfire and PM2.5_Background, and a flag for if the pixel was dust or not. Therefore, this dataset is just a demo to see how we store the processed data and the data structures, as well as approximate data size estimates. 
+
+CONDITIONS OF USE:
+Please note these data are restricted and may not be on-shared or used for purposes outside the specified project without permission from the data owner. 
+" $filename_2
