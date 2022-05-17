@@ -22,7 +22,7 @@ varlist <- varlist[4:length(varlist)]
 varlist
 
 #### load ABS SA1 for TAS ####
-indir_sa1 <- "~/ownCloud/Shared/Environment_General/ABS_data/ABS_Census_2016/abs_sa1_2016_data_provided"
+indir_sa1 <- "data_demo/ABS_Census_2016/abs_sa1_2016_data_provided"
 ## dir(indir_sa1)
 infile_sa1 <- "SA1_2016_TAS.shp"
 sa1 <- st_read(file.path(indir_sa1, infile_sa1))
@@ -109,4 +109,12 @@ dev.off()
 png("do_map_abs_sa1_pm25_bushfire_tas_20160122.png", width = 700, height = 700)
 plot(sa1_map["PM25_bushfire"])
 legend("bottomright", legend = "22 Jan 2016")
+dev.off()
+
+#### show the whole map ####
+
+var_i = "pm25_pred"
+b <- raster::brick(infile, varname = var_i)
+b2 <- b[[which(getZ(b) >= as.Date("2016-01-22") & getZ(b) < as.Date("2016-01-23"))]]
+plot(b2)
 dev.off()
