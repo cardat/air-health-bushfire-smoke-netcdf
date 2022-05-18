@@ -20,7 +20,7 @@ final_file=$4
 cd $layer_name/$start_year
 
 # Bulk converting GeoTIFFs into netCDF.
-for f in *.tif; do gdal_translate -of netCDF -co WRITE_LONLAT=YES $f ${f%.*}.nc; done
+for f in *.tif; do gdal_translate -of netCDF -co WRITE_LONLAT=YES -a_srs EPSG:3577 $f ${f%.*}.nc; done
 
 # Renaming albers-conical-equal-area to crs
 for f in *.nc; do ncrename -h -v albers_conical_equal_area,crs $f; done
