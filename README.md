@@ -73,3 +73,24 @@ And here is some maps of SA1 census geography units with spatially weighted PM2.
 
 ![do_map_abs_sa1_pm25_bushfire_tas_20160122.png](working_ivan/do_map_abs_sa1_pm25_bushfire_tas_20160122.png)
 
+## an example of the gridded data
+
+```{r}
+library(raster)
+library(ncdf4)
+
+#### input ####
+infile <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_2/data_netcdf/merged_files/bushfire_smoke_2001_2020_compressed_20220516.nc"
+
+#### variables ####
+r_nc <- ncdf4::nc_open(infile)
+r_nc
+var_i = "pm25_pred"
+b <- raster::brick(infile, varname = var_i)
+b2 <- b[[which(getZ(b) >= as.Date("2016-01-22") & getZ(b) < as.Date("2016-01-23"))]]
+plot(b2)
+```
+
+Will give the following
+
+![working_ivan/do_map_abs_sa1_pm25_pred_national_20160122.png](working_ivan/do_map_abs_sa1_pm25_pred_national_20160122.png)
