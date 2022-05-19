@@ -38,10 +38,14 @@ The following files are designed to sort, pre-process and merge the data. In ord
 3. merge_clean.sh - Merges the bands/layers of the ASDAF Smoke data into a single netCDF.
 
 ### file_sort.py
-This script assumes that your files are stored in a flat structure (i.e. all daily files for each layer are stored in a single directory). It will create subfolders for each layer and within, it will create subfolders for each year. You can modify the layers by editing file_sort.py in your preferred editor.
-To run this script, you will need to parse in arguments the source and target destinations of where your files are located.
+This script assumes that your files are stored in a flat structure (i.e. all daily files for each layer are stored in a single directory) and follow a consistent naming scheme (i.e. layer_name_year). It will create subfolders for a specified layer and within, it will create subfolders for each specified year.
+To run this script, you will need to parse in arguments for the source directory where your files are located, the target directory of where you wish your sorted files to be stored, a specific layer/band name to be sorted, as well as the start and end year for your data.
 ```
-% python3 file_sort.py <source_directory> <destination_directory>
+% python3 file_sort.py <source_directory> <destination_directory> <layer> <start_year> <end_year>
+```
+e.g.
+```
+% python3 file_sort.py Raw_Data Sorted_Data active_fires_10000 2001 2020
 ```
 
 ### batch_translate.sh
@@ -49,6 +53,10 @@ This script is used to translate specific layers of the ASDAF Smoke Data stored 
 To run this script, you will need to parse in the source destination of where your sorted files are located and name of your layer.
 ```
 % sh batch_translate.sh <source_directory> <layer_name>
+```
+e.g.
+```
+% sh batch_translate.sh /Sorted_Data active_fires_1000
 ```
 
 ### merge_clean.sh
