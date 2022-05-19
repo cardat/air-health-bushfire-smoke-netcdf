@@ -11,7 +11,7 @@ library(data.table)
 
 
 #### input ####
-infile <- "~/ownCloud/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_2/data_netcdf/merged_files/bushfire_smoke_2001_2020_compressed_20220516.nc"
+infile <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_2/data_netcdf/merged_files/bushfire_smoke_2001_2020_compressed_20220516.nc"
 
 #### variables ####
 r_nc <- ncdf4::nc_open(infile)
@@ -101,12 +101,12 @@ sa1_tomap <- outdat_wide2[date == as.Date("2016-01-22")]
 sa1_tomap[,PM25_bushfire := ifelse(smoke_2sd > 0 & active_fires_50000 > 0 & dust_merra_2_p95 == 0, 1, 0)]
 sa1_map <- cbind(sa1, sa1_tomap)
 
-png("do_map_abs_sa1_pm25_tas_20160122.png", width = 700, height = 700)
+png("working_ivan/do_map_abs_sa1_pm25_tas_20160122.png", width = 700, height = 700)
 plot(sa1_map["pm25_pred"])
 legend("bottomright", legend = "22 Jan 2016")
 dev.off()
 
-png("do_map_abs_sa1_pm25_bushfire_tas_20160122.png", width = 700, height = 700)
+png("working_ivan/do_map_abs_sa1_pm25_bushfire_tas_20160122.png", width = 700, height = 700)
 plot(sa1_map["PM25_bushfire"])
 legend("bottomright", legend = "22 Jan 2016")
 dev.off()
@@ -116,5 +116,6 @@ dev.off()
 var_i = "pm25_pred"
 b <- raster::brick(infile, varname = var_i)
 b2 <- b[[which(getZ(b) >= as.Date("2016-01-22") & getZ(b) < as.Date("2016-01-23"))]]
+png("working_ivan/do_map_abs_sa1_pm25_pred_national_20160122.png", width = 700, height = 700)
 plot(b2)
 dev.off()
