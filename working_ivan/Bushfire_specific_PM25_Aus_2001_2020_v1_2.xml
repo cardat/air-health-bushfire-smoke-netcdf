@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1" packageId="e581c852-4d6d-4eb7-964f-90d34b0f4dfe" system="uuid" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.1.1 https://eml.ecoinformatics.org/eml-2.1.1/eml.xsd">
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1" packageId="78693c64-923a-4378-9d48-194e81227368" system="uuid" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.1.1 https://eml.ecoinformatics.org/eml-2.1.1/eml.xsd">
   <dataset id="780">
     <shortName>Bushfire_specific_PM25_Aus_2001_2020_v1_2</shortName>
     <title>Bushfire_specific_PM25_Aus_2001_2020_v1_2</title>
@@ -18,10 +18,10 @@ Data available to others on request. Access to these data is mediated through th
       <geographicCoverage>
         <geographicDescription>OGC WKT = PROJCS["GDA94 / Australian Albers",GEOGCS["GDA94",DATUM["Geocentric_Datum_of_Australia_1994",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6283"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4283"]],PROJECTION["Albers_Conic_Equal_Area"],PARAMETER["standard_parallel_1",-18],PARAMETER["standard_parallel_2",-36],PARAMETER["latitude_of_center",0],PARAMETER["longitude_of_center",132],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3577"]]</geographicDescription>
         <boundingCoordinates>
-          <westBoundingCoordinate>-122.44</westBoundingCoordinate>
-          <eastBoundingCoordinate>-117.15</eastBoundingCoordinate>
-          <northBoundingCoordinate>37.38</northBoundingCoordinate>
-          <southBoundingCoordinate>30</southBoundingCoordinate>
+          <westBoundingCoordinate>-1886000</westBoundingCoordinate>
+          <eastBoundingCoordinate>2119000</eastBoundingCoordinate>
+          <northBoundingCoordinate>-1100000</northBoundingCoordinate>
+          <southBoundingCoordinate>-4840000</southBoundingCoordinate>
         </boundingCoordinates>
       </geographicCoverage>
       <taxonomicCoverage>
@@ -51,6 +51,84 @@ In 2020 Geoffrey Morgan, Ivan Hanigan, Fay.Johnston and Yuming Guo got CAR Seed 
 This project uses data from the validated bushfire smoke data owned by Ivan Hanigan, which was supported by funds from grants from the Australian Research Council (LP0882048) and the National Health and Medical Research Council (490057) and the Australian National Data Service (ANDS) SWISH Climate Impacts project (project code AP07).&#13;
 </funding>
     </project>
+    <dataTable>
+      <entityName>bushfire_smoke_2001_2020_compressed_20220516.nc</entityName>
+      <entityDescription>bushfire_smoke_2001_2020_compressed_20220516.nc</entityDescription>
+      <attributeList>
+        <attribute>
+          <attributeName>active_fires_10000</attributeName>
+          <attributeDefinition>active_fires_10000</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>active_fires_25000</attributeName>
+          <attributeDefinition>active_fires_25000</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>active_fires_50000</attributeName>
+          <attributeDefinition>active_fires_50000</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>dust_merra_2_p95</attributeName>
+          <attributeDefinition>dust_merra_2_p95</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>pm25_pred</attributeName>
+          <attributeDefinition>PM2.5 predicted</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>remainder</attributeName>
+          <attributeDefinition>The amount of PM2.5 probably from bushfire or dust or something else.</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>season_plus_trend</attributeName>
+          <attributeDefinition>season_plus_trend</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>smoke_2sd</attributeName>
+          <attributeDefinition>smoke_2sd</attributeDefinition>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain/>
+            </nominal>
+          </measurementScale>
+        </attribute>
+      </attributeList>
+    </dataTable>
   </dataset>
   <additionalMetadata>
     <metadata>
