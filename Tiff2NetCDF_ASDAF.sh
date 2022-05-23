@@ -62,6 +62,7 @@ ncatted -h -a _CoordinateAxisType,lat,d,, ${sOutFolder}/Un_${sFilename}_${iYear}
 
 # Update attributes in the Global Section
 #MS why are some o,c and others just c,c ?
+#CP o,c is to overwrite the existing attribute with characters, meanwhile c,c is to create a new attribute that doesn't exist
 ncatted -h -a Conventions,global,o,c,"CF-1.6" ${sOutFolder}/Un_${sFilename}_${iYear}.nc
 for iAttrib in $(seq 0 $nArr); do
 ncatted -h -a ${aAtt_Cat[$iAttrib]},global,c,c,"${aAtt_Desc[$iAttrib]}" ${sOutFolder}/Un_${sFilename}_${iYear}.nc
