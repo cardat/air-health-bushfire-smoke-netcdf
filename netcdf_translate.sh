@@ -34,12 +34,24 @@ cd $sInFolder
 echo "converting "${layer_name}_${start_year}
 for f in ${layer_name}_${start_year}*.tif; do gdal_translate -of netCDF -co WRITE_LONLAT=YES $sProjection $f ${sOutFolder}/tmp_${f%.*}.nc; done
 
+# Adding the time dimension to netCDF from filename
+for f in ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc; do
+    date=`echo $f | cut -d'_' -f5`
+    year=`echo $date | cut -c1-4`
+    month=`echo $date | cut -c5-6`
+    day=`echo $date | cut -c7-8`
+    fulldate=$year-$month-$day
+    cdo -setreftime,1900-01-01,00:00:00,1day -setdate,$fulldate -settime,12:00:00 -setcalendar,standard $f ${f%.*}_timestamped.nc; done    
+
+#CP Throws errors during CDO merge, albers-conical-equal-area will be renamed to crs after merge
 # Renaming albers-conical-equal-area to crs
-for f in ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc; do ncrename -h -v albers_conical_equal_area,crs $f; done
+#for f in ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc; do ncrename -h -v albers_conical_equal_area,crs $f; done
 
 # Merging netCDF files into one single file (netcdf4 format)
-ncecat -4 -O -h -x -v crs -u time ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc ${sOutFolder}/tmp_$final_file
+#ncecat -4 -O -h -x -v crs -u time ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc ${sOutFolder}/tmp_$final_file
+cdo -O nc4 mergetime ${sOutFolder}/tmp_${layer_name}_${start_year}*_timestamped.nc ${sOutFolder}/tmp_$final_file
 rm -rf ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc		#cleanup the temp_layer_year files
+rm -rf ${sOutFolder}/timestamped_tmp_${layer_name}_${start_year}*_timestamped.nc	#cleanup the tmp_layer_year_timestamped files
 
 # Copying the crs variable from a previous netCDF daily file
 #MS ncks -h -A -v crs $initial_file $final_file
@@ -47,18 +59,22 @@ rm -rf ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc		#cleanup the temp_laye
 # Adding the time variable to the netCDF file
 # Time step of 0.5 days
 #MS this is an error date should be picked up from the filename
-ncap2 -O -h -s 'time=array(0.5, 1, $time);' ${sOutFolder}/tmp_$final_file ${sOutFolder}/tmp_$final_file
+#CP handling dates in lines 37 to 44
+# ncap2 -O -h -s 'time=array(0.5, 1, $time);' ${sOutFolder}/tmp_$final_file ${sOutFolder}/tmp_$final_file
 
 # Renaming the Band1 variable to something more meaningful
 ncrename -h -v Band1,$7 ${sOutFolder}/tmp_$final_file
 
+# Renaming albers-conical-equal-area to crs
+ncrename -h -v albers_conical_equal_area,crs ${sOutFolder}/tmp_$final_file
+
 # Updating attributes to CF compliance
 ## Update attributes for the time variable
-ncatted -h -a units,time,c,c,"days since $start_year-01-01 00:00:00" ${sOutFolder}/tmp_$final_file
-ncatted -h -a calendar,time,c,c,"standard" ${sOutFolder}/tmp_$final_file
+# ncatted -h -a units,time,c,c,"days since $start_year-01-01 00:00:00" ${sOutFolder}/tmp_$final_file
+# ncatted -h -a calendar,time,c,c,"standard" ${sOutFolder}/tmp_$final_file
 ncatted -h -a description,time,c,c,"middle of each day" ${sOutFolder}/tmp_$final_file
 ncatted -h -a long_name,time,c,c,"time" ${sOutFolder}/tmp_$final_file
-ncatted -h -a standard_name,time,c,c,"time" ${sOutFolder}/tmp_$final_file
+# ncatted -h -a standard_name,time,c,c,"time" ${sOutFolder}/tmp_$final_file
 
 ## Update attributes for the layer 
 ncatted -h -a grid_mapping,$7,o,c,"crs" ${sOutFolder}/tmp_$final_file
