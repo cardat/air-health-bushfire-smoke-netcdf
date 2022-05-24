@@ -49,7 +49,7 @@ for f in ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc; do
 
 # Merging netCDF files into one single file (netcdf4 format)
 #ncecat -4 -O -h -x -v crs -u time ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc ${sOutFolder}/tmp_$final_file
-cdo -O nc4 mergetime ${sOutFolder}/tmp_${layer_name}_${start_year}*_timestamped.nc ${sOutFolder}/tmp_$final_file
+cdo -O mergetime ${sOutFolder}/tmp_${layer_name}_${start_year}*_timestamped.nc ${sOutFolder}/tmp_$final_file
 rm -rf ${sOutFolder}/tmp_${layer_name}_${start_year}*.nc		#cleanup the temp_layer_year files
 rm -rf ${sOutFolder}/timestamped_tmp_${layer_name}_${start_year}*_timestamped.nc	#cleanup the tmp_layer_year_timestamped files
 
