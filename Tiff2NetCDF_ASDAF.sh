@@ -4,8 +4,8 @@
 ### This file needs to be copied and variables adapted per project
 
 ### These variables are specifically for the ASDAF Smoke Data.
-sInFolder="./ASDAF/working_miles/"
-sOutFolder="/mnt/c/tmp/Curtin/ASDAF/netCDF"
+sInFolder="/home/289800b/projects/ASDAF/data_derived/working_miles"
+sOutFolder="/home/289800b/projects/ASDAF/netCDF"
 sProjection="-a_srs EPSG:3577"
 sFilename="ASDAF"
 
@@ -74,7 +74,6 @@ done
 wait	#for all compress actions to finish
 
 rm -rf ${sOutFolder}/Un_${sFilename}_*.nc                                                     # cleanup uncompressed files
-
 
 
 
