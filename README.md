@@ -38,10 +38,14 @@ The following files are designed to sort, pre-process and merge the data. In ord
 3. merge_clean.sh - Merges the bands/layers of the ASDAF Smoke data into a single netCDF.
 
 ### file_sort.py
-This script assumes that your files are stored in a flat structure (i.e. all daily files for each layer are stored in a single directory). It will create subfolders for each layer and within, it will create subfolders for each year. You can modify the layers by editing file_sort.py in your preferred editor.
-To run this script, you will need to parse in arguments the source and target destinations of where your files are located.
+This script assumes that your files are stored in a flat structure (i.e. all daily files for each layer are stored in a single directory) and follow a consistent naming scheme (i.e. layer_name_year). It will create subfolders for a specified layer and within, it will create subfolders for each specified year.
+To run this script, you will need to parse in arguments for the source directory where your files are located, the target directory of where you wish your sorted files to be stored, a specific layer/band name to be sorted, as well as the start and end year for your data.
 ```
-% python3 file_sort.py <source_directory> <destination_directory>
+% python3 file_sort.py <source_directory> <destination_directory> <layer> <start_year> <end_year>
+```
+e.g.
+```
+% python3 file_sort.py Raw_Data Sorted_Data active_fires_10000 2001 2020
 ```
 
 ### batch_translate.sh
@@ -49,6 +53,10 @@ This script is used to translate specific layers of the ASDAF Smoke Data stored 
 To run this script, you will need to parse in the source destination of where your sorted files are located and name of your layer.
 ```
 % sh batch_translate.sh <source_directory> <layer_name>
+```
+e.g.
+```
+% sh batch_translate.sh /Sorted_Data active_fires_1000
 ```
 
 ### merge_clean.sh
@@ -65,11 +73,32 @@ To run this script, you will need to parse in the directory of the merged files 
 
 With R we can assign smoke levels to ABS census geographic units and use indicator flags of dust or active fire to identify probable smoke events (see `do_extract_abs_sa1.R`:
 
-![do_extract_abs_sa1_launceston.png](do_extract_abs_sa1_launceston.png)
+![do_extract_abs_sa1_launceston.png](working_ivan/do_extract_abs_sa1_launceston.png)
 
 And here is some maps of SA1 census geography units with spatially weighted PM2.5 and identified bushfire smoke areas:
 
-![do_map_abs_sa1_pm25_tas_20160122.png](do_map_abs_sa1_pm25_tas_20160122.png)
+![do_map_abs_sa1_pm25_tas_20160122.png](working_ivan/do_map_abs_sa1_pm25_tas_20160122.png)
 
-![do_map_abs_sa1_pm25_bushfire_tas_20160122.png](do_map_abs_sa1_pm25_bushfire_tas_20160122.png)
+![do_map_abs_sa1_pm25_bushfire_tas_20160122.png](working_ivan/do_map_abs_sa1_pm25_bushfire_tas_20160122.png)
 
+## an example of the gridded data
+
+```{r}
+library(raster)
+library(ncdf4)
+
+#### input ####
+infile <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_2/data_netcdf/merged_files/bushfire_smoke_2001_2020_compressed_20220516.nc"
+
+#### variables ####
+r_nc <- ncdf4::nc_open(infile)
+r_nc
+var_i = "pm25_pred"
+b <- raster::brick(infile, varname = var_i)
+b2 <- b[[which(getZ(b) >= as.Date("2016-01-22") & getZ(b) < as.Date("2016-01-23"))]]
+plot(b2)
+```
+
+Will give the following
+
+![working_ivan/do_map_abs_sa1_pm25_pred_national_20160122.png](working_ivan/do_map_abs_sa1_pm25_pred_national_20160122.png)

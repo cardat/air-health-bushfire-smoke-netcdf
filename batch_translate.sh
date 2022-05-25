@@ -3,6 +3,9 @@
 ### This script is used to call netcdf_translate.sh on specific layers of the ASDAF Smoke Data.
 ### Once the netCDF files are created, they are merged into a single file spanning the entire 2001 to 2020 time period.
 
+#get the directory where this script is called from
+sDir="$(pwd)"
+
 # Set the directory where the sorted geoTIFFs are located
 directory=$1
 cd $directory
@@ -19,7 +22,7 @@ do
     do
         # Merging the layer for each year (Edit the file path to match current data revision date yyyymmdd)
         # Current data revision date: 20220211
-        sh netcdf_translate.sh $layer_name $year ""$layer_name"_"$year"0101_v20220211.nc" ""$layer_name"_"$year".nc"
+        sh $sDir/netcdf_translate.sh $layer_name $year ""$layer_name"_"$year"0101_v20220211.nc" ""$layer_name"_"$year".nc"
     done
 
 # Merging the layer across the 2001 to 2020 time period
