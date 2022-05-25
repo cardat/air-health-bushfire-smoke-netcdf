@@ -10,7 +10,7 @@ sProjection="-a_srs EPSG:4326"        # Guessing that it is in WGS 84
 sFilename="AWAP"
 
 #What years is this for
-iYearStart=1961 
+iYearStart=1900 
 iYearEnd=2022
 #MS Fix    bSeperatedByYear=false
 
@@ -44,9 +44,9 @@ for iYear in $(seq $iYearStart $iYearEnd); do
 #MS fix need an if statement if bSeperatedByYear=true then sIn=$sInFolder/$iYear else sIn=$sInFolder
 sIn=${sInFolder}/${iYear}
 for iLayer in $(seq 0 $nLayers); do
-sh netcdf_translate.sh $sIn $sOutFolder "$sProjection" $iYear $sFilename "${aLayers[$iLayer]}" "${aNames[$iLayer]}" "${aUnits[$iLayer]}" "${aDescription[$iLayer]}" &         
+sh netcdf_translate.sh $sIn $sOutFolder "$sProjection" $iYear $sFilename "${aLayers[$iLayer]}" "${aNames[$iLayer]}" "${aUnits[$iLayer]}" "${aDescription[$iLayer]}" &          
 done
-wait #run layers in parallel and wait for all layers to finish
+wait #run layers in parallel and wait for all layers to finish Note don't do this when testing, screen is confusing
 
 #This is copied and modified from merge
 
@@ -61,18 +61,17 @@ ncatted -h -a _CoordinateAxisType,lon,d,, ${sOutFolder}/Un_${sFilename}_${iYear}
 ncatted -h -a _CoordinateAxisType,lat,d,, ${sOutFolder}/Un_${sFilename}_${iYear}.nc
 
 # Update attributes in the Global Section
-#MS why are some o,c and others just c,c ?
 ncatted -h -a Conventions,global,o,c,"CF-1.6" ${sOutFolder}/Un_${sFilename}_${iYear}.nc
 for iAttrib in $(seq 0 $nArr); do
 ncatted -h -a ${aAtt_Cat[$iAttrib]},global,c,c,"${aAtt_Desc[$iAttrib]}" ${sOutFolder}/Un_${sFilename}_${iYear}.nc
 done
 
+echo "compacting file: "${sFilename}_${iYear}.nc
 nccopy -d9 ${sOutFolder}/Un_${sFilename}_${iYear}.nc ${sOutFolder}/${sFilename}_${iYear}.nc &           # Compressing the file in the background
 
 done
 wait	#for all compress actions to finish
 
 rm -rf ${sOutFolder}/Un_${sFilename}_*.nc                                                     # cleanup uncompressed files
-
 
 
