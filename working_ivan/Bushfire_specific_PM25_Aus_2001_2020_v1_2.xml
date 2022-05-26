@@ -17,6 +17,11 @@ Data available to others on request. Access to these data is mediated through th
     <coverage>
       <geographicCoverage>
         <geographicDescription>OGC WKT = PROJCS["GDA94 / Australian Albers",GEOGCS["GDA94",DATUM["Geocentric_Datum_of_Australia_1994",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],TOWGS84[0,0,0,0,0,0,0],AUTHORITY["EPSG","6283"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4283"]],PROJECTION["Albers_Conic_Equal_Area"],PARAMETER["standard_parallel_1",-18],PARAMETER["standard_parallel_2",-36],PARAMETER["latitude_of_center",0],PARAMETER["longitude_of_center",132],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH],AUTHORITY["EPSG","3577"]]</geographicDescription>
+		<projection>
+			<projectionCode>-a_srs EPSG:4326</projectionCode>
+			<projectionDescription>GDA94 / Australian Albers</projectionDescription>
+		</projection>
+		<Years><YearStart>2001</YearStart><YearEnd>2020</YearEnd></Years>
         <boundingCoordinates>
           <westBoundingCoordinate>-1886000</westBoundingCoordinate>
           <eastBoundingCoordinate>2119000</eastBoundingCoordinate>
@@ -57,11 +62,14 @@ This project uses data from the validated bushfire smoke data owned by Ivan Hani
       <attributeList>
         <attribute>
           <attributeName>active_fires_10000</attributeName>
-          <attributeDefinition>active_fires_10000</attributeDefinition>
+          <attributeDefinition>Active fire within 10 km</attributeDefinition>
+		  <attributeTiffFile>active_fires_10000</attributeTiffFile>
+		  <attributeUnits>Boolean: true/false</attributeUnits>
           <measurementScale>
-            <nominal>
-              <nonNumericDomain/>
-            </nominal>
+            <FillVal>-1</FillVal>
+			<Missing>-1</Missing>
+			<LowRange>0</LowRange>
+			<HighRange>1</HighRange>
           </measurementScale>
         </attribute>
         <attribute>
