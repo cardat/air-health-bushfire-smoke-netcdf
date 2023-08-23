@@ -72,6 +72,7 @@ do_convert_rds_to_ncdf <- function(
     # more successful than terra at writing out a recognisable CRS
     stars_dly <- stars::st_as_stars(s_dly)
     names(stars_dly) <- lyr_type
+    if(!dir.exists("data_derived")) dir.create("data_derived")
     stars::write_mdim(stars_dly, filename = file.path("data_derived", paste0(yy,"_",lyr_type,".nc")))
     ## qc
     # foo <- rast("data_derived/2016_remainder.nc")
