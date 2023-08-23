@@ -5,10 +5,7 @@
 rootdir: "~/cloudstor/Shared/"
 
 ## set the data directories and data files ##
-shpdir: "Environment_General/ABS_data/ABS_Census_2016/abs_sa1_2016_data_provided"
-shpfile: "SA1_2016_AUST.shp"
-popdir: "Environment_General/ABS_data/ABS_GCP_2016/data_provided/SA1/AUST"
-popfile: "2016Census_G01_AUS_SA1.csv"
+raster_flags: "Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/flagged"
 raster_stl: "Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl"
 raster_coords: "Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/grid_aus_5000.gpkg"
 dat_derived_dir: "data_derived"

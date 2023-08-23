@@ -31,7 +31,7 @@ list(
     do_convert_rds_to_ncdf(
       indir_rf = file.path(config$rootdir, config$raster_stl),
       infile_coords = file.path(config$rootdir, config$raster_coords),
-      yy_todo = 2016
+      yy_todo = 2019
     )
   )
 )
