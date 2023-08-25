@@ -1,0 +1,12 @@
+## set the root directory ## 
+# working_lucas
+# rootdir: "Z:/Shared/"
+# working_ivan
+rootdir: "~/cloudstor/Shared/"
+
+## set the data directories and data files ##
+raster_pm_pred: "Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/pm25_preds"
+raster_flags: "Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/flagged"
+raster_stl: "Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl"
+raster_coords: "Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/grid_aus_5000.gpkg"
+dat_derived_dir: "data_derived"
