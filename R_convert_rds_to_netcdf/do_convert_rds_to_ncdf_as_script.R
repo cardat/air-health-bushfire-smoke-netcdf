@@ -206,16 +206,16 @@ cdo merge 2019_* bushfiresmoke_v1_3_2019.nc
 
 nccopy -d9 bushfiresmoke_v1_3_2019.nc bushfiresmoke_v1_3_2019_compressed.nc
 
-ncatted -h -a source,global,c,c,"The data was generated using a random forest model with satellite data, land use and other GIS layers as predictors of particulate matter (PM2.5) air pollution. A method of identifying specific pollution attributable to bushfires was applied that uses the seasonal trend decomposition algorithm (STL)." bushfiresmoke_v1_3_2019.nc
+ncatted -h -a source,global,c,c,"The data was generated using a random forest model with satellite data, land use and other GIS layers as predictors of particulate matter (PM2.5) air pollution. A method of identifying specific pollution attributable to bushfires was applied that uses the seasonal trend decomposition algorithm (STL)." bushfiresmoke_v1_3_2019_compressed.nc
 
-ncatted -h -a references,global,o,c,"CAR Firesmoke Project Team 2021. Bushfire specific PM2.5 output from v1.3 based on satellite and other land use and other predictors for Australia 2001-2021 produced for the CAR Bushfire Smoke Exposures project. Downloaded from the Centre for Air pollution, energy and health Research." bushfiresmoke_v1_3_2019.nc
+ncatted -h -a references,global,o,c,"CAR Firesmoke Project Team. Bushfire specific PM2.5 output from v1.3 based on satellite and other land use and other predictors for Australia 2001-2020 produced for the ARDC and CAR Bushfire Smoke Exposures project. Funding supported by CAR and the ARDC’s Bushfire Data Challenges Project. Assessing the impact of bushfire smoke on health. A collaboration between the National Air Quality Technical Advisory Group (NATAG) and CAR. DOI: https://doi.org/10.47486/DC008. Downloaded from the Centre for Air pollution, energy and health Research." bushfiresmoke_v1_3_2019_compressed.nc
 
 ncatted -h -a comment,global,c,c,"This dataset is provided for use in a pilot project looking at building an API to optimise sharing of spatiotemporal gridded data output from satellite and other data modelling.
 
-Please note that this is still a preliminary dataset only as whilst there are several layers here (number predictors out of range, prediction out of range etc) but the pm25_pred is the predicted smoke particles (PM2.5) and future versions will have decomposed that into PM2.5_Bushfire and PM2.5_Background, and a flag for if the pixel was dust or not. Therefore, this dataset is just a demo to see how we store the processed data and the data structures, as well as approximate data size estimates. 
- 
+Please note that this is still a preliminary dataset only as whilst there are several layers here (number predictors out of range, prediction out of range etc) but the pm25_pred is the predicted smoke particles (PM2.5) and future versions will have decomposed that into PM2.5_Bushfire and PM2.5_Background, and a flag for if the pixel was dust or not. Therefore, this dataset is just a demo to see how we store the processed data and the data structures, as well as approximate data size estimates.
+
 CONDITIONS OF USE:
-Please note these data are restricted and may not be on-shared or used for purposes outside the specified project without permission from the data owner." bushfiresmoke_v1_3_2019.nc
+Please note these data are restricted and may not be on-shared or used for purposes outside the specified project without permission from the data owner." bushfiresmoke_v1_3_2019_compressed.nc
 
 '
     

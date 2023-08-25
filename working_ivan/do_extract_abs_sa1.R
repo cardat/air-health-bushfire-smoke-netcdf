@@ -13,7 +13,7 @@ library(data.table)
 
 #### input ####
 dir("data_provided")
-infile <- "data_provided/bushfiresmoke_v1_3_2019_compressed.nc"
+infile <- "data_provided/bushfiresmoke_v1_3_2019_compressed_20230825_1.nc"
 
 #### variables ####
 r_nc <- ncdf4::nc_open(infile)
