@@ -73,7 +73,7 @@ To run this script, you will need to parse in the directory of the merged files 
 
 With R we can assign smoke levels to ABS census geographic units and use indicator flags of dust or active fire to identify probable smoke events (see `do_extract_abs_sa1.R`:
 
-![do_extract_abs_sa1_launceston.png](working_ivan/do_extract_abs_sa1_launceston.png)
+![do_extract_abs_sa1_launceston_2019_Dec.png](working_ivan/do_extract_abs_sa1_launceston_2019_Dec.png)
 
 And here is some maps of SA1 census geography units with spatially weighted PM2.5 and identified bushfire smoke areas:
 
