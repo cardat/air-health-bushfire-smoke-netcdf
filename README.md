@@ -77,9 +77,9 @@ With R we can assign smoke levels to ABS census geographic units and use indicat
 
 And here is some maps of SA1 census geography units with spatially weighted PM2.5 and identified bushfire smoke areas:
 
-![do_map_abs_sa1_pm25_tas_20160122.png](working_ivan/do_map_abs_sa1_pm25_tas_20160122.png)
+![do_map_abs_sa1_pm25_tas_20191209.png](working_ivan/do_map_abs_sa1_pm25_tas_20191209.png)
 
-![do_map_abs_sa1_pm25_bushfire_tas_20160122.png](working_ivan/do_map_abs_sa1_pm25_bushfire_tas_20160122.png)
+![do_map_abs_sa1_pm25_bushfire_tas_20191209.png](working_ivan/do_map_abs_sa1_pm25_bushfire_tas_20191209.png)
 
 ## an example of the gridded data
 
@@ -101,4 +101,4 @@ plot(b2)
 
 Will give the following
 
-![working_ivan/do_map_abs_sa1_pm25_pred_national_20160122.png](working_ivan/do_map_abs_sa1_pm25_pred_national_20160122.png)
+![working_ivan/do_map_abs_sa1_pm25_pred_national_20191209.png](working_ivan/do_map_abs_sa1_pm25_pred_national_20191209.png)

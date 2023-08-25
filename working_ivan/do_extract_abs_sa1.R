@@ -82,9 +82,9 @@ sa1_todo <- 6103815
 sa1_toplot <- outdat_wide2[SA1_7DIG16 == sa1_todo]
 names(sa1_toplot)
 
-png("do_extract_abs_sa1_launceston_2019_Dec.png", width = 1000, height = 700)
+png("working_ivan/do_extract_abs_sa1_launceston_2019_Dec.png", width = 1000, height = 700)
 # show the pm2.5
-with(sa1_toplot, plot(date, pm25_pred, type = "h", ylim = c(0,40)))
+with(sa1_toplot, plot(date, pm25_pred, type = "h", ylim = c(0,15)))
 # show the background PM
 with(sa1_toplot, lines(date, seasonal + trend, col = 'blue'))
 # show possible fire days
