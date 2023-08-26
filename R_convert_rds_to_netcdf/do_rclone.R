@@ -1,18 +1,26 @@
-for(i in 1:10){
-#txt <- sprintf("rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/flagged/flags_pm25_2019%02d_20230329.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/flagged/ \n",  i)
-#txt <- sprintf("rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/pm25_preds/2019/rf_pm25_2019%02d_20230207.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/pm25_preds/2019/ \n",  i)
-txt <- sprintf("rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_2019%02d_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ \n",  i)  
+yy = 2020
+
+for(i in 2:12){
+#  i = 1
+txt <- sprintf("rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/flagged/flags_pm25_%s%02d_20230329.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/flagged/ \n\n", yy, i)
 cat(txt)
+
 }
-# 
-rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201901_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201902_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201903_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201904_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201905_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201906_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201907_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201908_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201909_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
-  rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_201910_20230306.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ 
+# actaullay this rclone copy  --progress --transfers 8 Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/flagged cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/flagged
+
+
+for(i in 1:12){
+  #  i = 1
+txt2 <- sprintf("rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/pm25_preds/%s/rf_pm25_%s%02d_20230207.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/pm25_preds/%s/ \n\n",yy, yy, i, yy)
+cat(txt2)
+
+}
+# rclone copy --progress --transfers 8 Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/pm25_preds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/pm25_preds
+for(i in 1:12){
+  #  i = 1
+txt3 <- sprintf("rclone copy Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/stl_pm25_%s%02d_20230316.rds cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl/ \n\n", yy, i)  
+cat(txt3)
+
+}
+# rclone copy --progress --transfers 8 Cloudstor:Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_provided/stl
   
