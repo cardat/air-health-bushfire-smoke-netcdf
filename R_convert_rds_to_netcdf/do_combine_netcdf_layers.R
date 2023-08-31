@@ -1,0 +1,85 @@
+library(terra)
+
+#### set up ####
+rootdir <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived"
+flist <- dir(rootdir, full.names = T)
+
+#### extract the layer ####
+for(fi in flist[4:length(flist)]){
+# fi <- flist[1]
+print(fi)
+
+# system(sprintf("gdalinfo %s", fi))
+# system2("gdalinfo", fi)
+
+var_i <- "remainder"
+system(
+  sprintf("cdo select,name=%s %s %s",
+        var_i,
+        fi,  
+        gsub(".nc$", paste0("_", var_i, ".nc"), fi)
+  )
+)
+
+}
+
+system(
+  sprintf("cdo mergetime %s %s",
+          file.path(rootdir, paste0("*_", var_i, ".nc")),
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_out.nc"))          
+          )
+)
+
+
+#### qc ####
+dir()
+infile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_out.nc"))
+system2("gdalinfo", infile)
+r <- terra::rast(infile)
+r
+plot(r[[1]])
+xy <- cbind(1545315, -3954140)
+e <- extract(r, xy)
+len <- length(e)
+len
+20*365.25
+plot(1:len,e)
+abline(quantile(t(e), 0.99),0)
+
+# system(
+#   sprintf("nccopy -d9 %s %s",
+#           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_out.nc")),
+#           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_compressed.nc"))          
+#   )
+# )
+
+#### extract the SD ####
+## but first the 99th
+
+system(
+  sprintf("cdo timmin %s %s", 
+          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_out.nc"), 
+          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_min.nc")
+  )
+)
+system(
+  sprintf("cdo timmax %s %s", 
+          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_out.nc"), 
+          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_max.nc")
+  )
+)
+system(
+  sprintf("cdo timpctl,99 %s %s %s %s", 
+          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_out.nc"), 
+          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_min.nc"), 
+          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_max.nc"),
+          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_p99.nc")
+  )
+)
+
+infile <- file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_p99.nc")
+system2("gdalinfo", infile)
+r <- terra::rast(infile)
+r
+plot(r)
+
