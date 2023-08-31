@@ -44,14 +44,9 @@ len <- length(e)
 len
 20*365.25
 plot(1:len,e)
-abline(quantile(t(e), 0.99),0)
+p99 <- quantile(t(e), 0.99)
+abline(p99,0)
 
-# system(
-#   sprintf("nccopy -d9 %s %s",
-#           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_out.nc")),
-#           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_compressed.nc"))          
-#   )
-# )
 
 #### extract the SD ####
 ## but first the 99th
@@ -79,7 +74,31 @@ system(
 
 infile <- file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_p99.nc")
 system2("gdalinfo", infile)
-r <- terra::rast(infile)
-r
-plot(r)
+r99 <- terra::rast(infile)
+r99
+plot(r99)
 
+#### smoke_2SD_trimmed ####
+system(
+  sprintf("nccopy -d9 %s %s",
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_out.nc")),
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_compressed.nc"))
+  )
+)
+
+
+infile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_out.nc"))
+system2("gdalinfo", infile)
+r0 <- terra::rast(infile)
+r0
+plot(r0[[1:4]])
+r1 <- ifel(r0 > r99, r99, r0)
+plot(r1[[1:4]])
+xy <- cbind(1545315, -3954140)
+e <- extract(r, xy)
+len <- length(e)
+len
+20*365.25
+plot(1:len,e)
+outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed_p99.rds"))
+saveRDS(r0, outfile)
