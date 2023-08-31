@@ -45,3 +45,6 @@ e2_tposed <- data.frame(vname = names(e2), values = t(e2))
 head(e2_tposed)
 setDT(e2_tposed)
 e2_tposed[grep("smoke_2SD", vname)]
+
+## dump to rds
+saveRDS(e2_tposed, "data_derived/qc_belconnen_pixel_extraction_for_ben.rds")
