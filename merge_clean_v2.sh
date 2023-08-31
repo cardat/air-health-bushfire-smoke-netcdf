@@ -11,11 +11,11 @@
 directory=$1
 cd $directory
 
-filename_1="bushfiresmoke_v1_3_2015.nc"
-filename_2="bushfiresmoke_v1_3_2015_compressed.nc"
+filename_1="bushfiresmoke_v1_3_2001.nc"
+filename_2="bushfiresmoke_v1_3_2001_compressed.nc"
 
 # Merging different bands/layers into a single file
-cdo merge 2015_* $filename_1
+cdo merge 2001_* $filename_1
 
 # Compressing the file
 nccopy -d9 $filename_1 $filename_2

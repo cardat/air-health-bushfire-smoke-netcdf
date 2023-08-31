@@ -12,8 +12,8 @@ library(data.table)
 
 
 #### input ####
-dir("data_provided")
-infile <- "data_provided/bushfiresmoke_v1_3_2020_compressed_20230825_1.nc"
+dir("~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived")
+infile <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived/bushfiresmoke_v1_3_2020_compressed_20230825_1.nc"
 
 #### variables ####
 r_nc <- ncdf4::nc_open(infile)

@@ -15,7 +15,7 @@ config <- yaml::read_yaml("config.yaml")
 #    ,
     infile_coords = file.path(config$rootdir, config$raster_coords)
 #    ,
-    yy_todo = 2015
+    yy_todo = 2001
   #) {
   
   for(yy in yy_todo){
@@ -23,7 +23,7 @@ config <- yaml::read_yaml("config.yaml")
   ## Convert vector file of coordinates to a df with x and y columns using vect() ##
   dat_coords <- as.data.frame(vect(infile_coords), geom = "XY")
   setDT(dat_coords)
-  
+
   #### load pm ####
   fs <- dir(file.path(indir_pm), full.names = T, recursive = T, pattern = "rds$")
   ## all available rds files ##
@@ -125,8 +125,8 @@ config <- yaml::read_yaml("config.yaml")
     # plot(foo[[1]])
     # finish loop over lyrs here
   }
-  # 
-  
+  #
+
   #### load and convert from flagged ####
   ## Search for .rds files in the indir_rf and store full paths in fs ##
   fs <- dir(file.path(indir_flags), full.names = T, recursive = T, pattern = "rds$")
@@ -146,26 +146,24 @@ config <- yaml::read_yaml("config.yaml")
   ## loop to iterate over the 3 layers ##
   ## for each layer creates a r_dly list of each date ##
 
-
-  for(lyr_type in c(  'dust_cams_p50',
-                      'dust_cams_p75',
-                      'dust_cams_p95',
-                      'dust_merra_2_p50',
-                      'dust_merra_2_p75',
-                      'dust_merra_2_p95',
-                      
-                      'smoke_p95', 'smoke_2SD',
-                      'whs_18degreeC',
-                      'whs_15degreeC',
-                      'whs_12degreeC',
-                      'active_fires_10000',
-                      'active_fires_25000',
-                      
-                    'active_fires_50000',
-                    'active_fires_100000',
-                    'active_fires_500000',
-                    'extrapolated')) {
-    # lyr_type = "dust_cams_p50"
+  for(lyr_type in c(  
+    #'dust_cams_p50',
+    #'dust_cams_p75',
+    #'dust_cams_p95',
+    'dust_merra_2_p50',
+    'dust_merra_2_p75',
+    'dust_merra_2_p95',
+    'smoke_p95', 'smoke_2SD',
+    'whs_18degreeC',
+    'whs_15degreeC',
+    'whs_12degreeC',
+    'active_fires_10000',
+    'active_fires_25000',
+    'active_fires_50000',
+    'active_fires_100000',
+    'active_fires_500000',
+    'extrapolated')) {
+    # lyr_type = "smoke_2SD"
     print(lyr_type)
     r_dly <- lapply(dates,
                     function(dd, lyr = lyr_type) {
