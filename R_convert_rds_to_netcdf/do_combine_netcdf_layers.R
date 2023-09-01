@@ -95,8 +95,15 @@ plot(r0[[1:4]])
 r1 <- ifel(r0 > r99, r99, r0)
 outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed.rds"))
 saveRDS(r1, outfile)
-# writeCDF(r1, filename = outfile)
-stars_r1 <- stars::st_as_stars(r1, ignore_file = T)
+r1 <- readRDS(outfile)
+r1
+outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed.nc"))
+writeCDF(r1, filename = outfile)
+qc <- terra::rast(outfile)
+
+#stars_r1 <- stars::st_as_stars(r1, ignore_file = T)
+stars_r1 <- stars::st_as_stars(qc, ignore_file = T)
+
 dim(stars_r1)
 names(stars_r1) <- var_i
 stars::write_mdim(stars_r1, file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_trimmed_2.nc")))
