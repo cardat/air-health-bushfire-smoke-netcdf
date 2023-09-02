@@ -2,17 +2,17 @@ library(terra)
 
 #### set up ####
 rootdir <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived"
-flist <- dir(rootdir, full.names = T)
+flist <- dir(rootdir, full.names = T, pattern = "_1.nc")
 
 #### extract the layer ####
-for(fi in flist[4:length(flist)]){
+for(fi in flist[2:length(flist)]){
 # fi <- flist[1]
 print(fi)
 
 # system(sprintf("gdalinfo %s", fi))
 # system2("gdalinfo", fi)
 
-var_i <- "remainder"
+var_i <- "pm25_pred" # "remainder"
 system(
   sprintf("cdo select,name=%s %s %s",
         var_i,
@@ -53,30 +53,53 @@ abline(p99,0)
 
 system(
   sprintf("cdo timmin %s %s", 
-          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_out.nc"), 
-          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_min.nc")
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_out.nc")), 
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_min.nc"))
   )
 )
 system(
   sprintf("cdo timmax %s %s", 
-          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_out.nc"), 
-          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_max.nc")
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_out.nc")), 
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_max.nc"))
   )
 )
 system(
   sprintf("cdo timpctl,99 %s %s %s %s", 
-          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_out.nc"), 
-          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_min.nc"), 
-          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_max.nc"),
-          file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_p99.nc")
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_out.nc")), 
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_min.nc")), 
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_max.nc")),
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_p99.nc"))
   )
 )
 
-infile <- file.path(rootdir, "bushfiresmoke_v1_3_2001_2020_remainder_p99.nc")
+infile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_p99.nc"))
 system2("gdalinfo", infile)
 r99 <- terra::rast(infile)
 r99
 plot(r99)
+
+# and 95th
+system(
+  sprintf("cdo timpctl,95 %s %s %s %s", 
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_out.nc")), 
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_min.nc")), 
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_max.nc")),
+          file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_p95.nc"))
+  )
+)
+
+infile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_p95.nc"))
+system2("gdalinfo", infile)
+r95 <- terra::rast(infile)
+r95
+plot(r95)
+
+# this seems high
+infile <-     file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_out.nc"))
+r1 <- terra::rast(infile)
+r1
+r95_2 <- quantile(r1, 0.95)
+plot(r95_2)
 
 #### smoke_2SD_trimmed ####
 system(
