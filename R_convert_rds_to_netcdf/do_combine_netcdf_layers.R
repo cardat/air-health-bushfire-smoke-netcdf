@@ -99,16 +99,18 @@ r1 <- readRDS(outfile)
 r1
 outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed.nc"))
 writeCDF(r1, filename = outfile)
-qc <- terra::rast(outfile)
+# nccopy -d9 bushfiresmoke_v1_3_2001_2020_remainder_trimmed.nc bushfiresmoke_v1_3_2001_2020_remainder_trimmed_compressed.nc
+# NOTE using the compressed netcdf takes a MUCH longer time for terra stdev than the uncompressed file
+outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed.nc"))
+r1 <- terra::rast(outfile)
+r1
+r1_sd <- stdev(r1)
+outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed_stdev.nc"))
+writeCDF(r1_sd, filename = outfile)
 
-#stars_r1 <- stars::st_as_stars(r1, ignore_file = T)
-stars_r1 <- stars::st_as_stars(qc, ignore_file = T)
 
-dim(stars_r1)
-names(stars_r1) <- var_i
-stars::write_mdim(stars_r1, file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_trimmed_2.nc")))
-
-
+# qc
+plot(r1_sd)
 plot(r1[[1:4]])
 xy <- cbind(1545315, -3954140)
 e <- extract(r1, xy)
@@ -116,5 +118,26 @@ len <- length(e)
 len
 20*365.25
 plot(1:len,e)
-outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed_p99.rds"))
-saveRDS(r0, outfile)
+e_sd <- extract(r1_sd, xy)
+abline(as.numeric(2*e_sd), 0)
+points(1:len,e, col = e > as.numeric(2*e_sd), pch = 16)
+
+# now do the main calculation for the flag
+r1_flagged <- ifel(r1 > 2*r1_sd, 1, 0)
+outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed_smoke_2SDv2.nc"))
+writeCDF(r1_flagged, filename = outfile)
+plot(r1_flagged[[1:4]])
+plot(1:len,e)
+e_flag <- extract(r1_flagged, xy)
+points(1:len, e, col = t(e_flag), pch = 16)
+
+#stars_r1 <- stars::st_as_stars(r1, ignore_file = T)
+#stars_r1 <- stars::st_as_stars(qc, ignore_file = T)
+
+# dim(stars_r1)
+# names(stars_r1) <- var_i
+# stars::write_mdim(stars_r1, file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_trimmed_2.nc")))
+
+#outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed_p99.rds"))
+#saveRDS(r0, outfile)
+
