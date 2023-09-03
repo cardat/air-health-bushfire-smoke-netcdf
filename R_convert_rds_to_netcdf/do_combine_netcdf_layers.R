@@ -107,6 +107,7 @@ r0 <- terra::rast(infile)
 r0
 plot(r0[[1:4]])
 r1_95_flagged <- ifel(r0 > r95, 1, 0)
+plot(r1_95_flagged[[1:4]])
 outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_smoke_p95v2.nc"))
 writeCDF(r1_95_flagged, filename = outfile)
 
@@ -115,7 +116,7 @@ system(
   sprintf("nccopy -d9 %s %s",
           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_out.nc")),
           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_compressed.nc"))
-  )
+.  )
 )
 
 
