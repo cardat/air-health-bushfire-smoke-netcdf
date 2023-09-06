@@ -1,7 +1,10 @@
+library(data.table)
+library(sf)
 library(terra)
+library(ncdf4)
 
 #### set up ####
-rootdir <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived"
+rootdir_OLD <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived"
 flist <- dir(rootdir, full.names = T, pattern = "_1.nc")
 
 #### extract the layer ####
@@ -78,7 +81,7 @@ r99 <- terra::rast(infile)
 r99
 plot(r99)
 
-# and 95th
+#### and 95th ####
 system(
   sprintf("cdo timpctl,95 %s %s %s %s", 
           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_",var_i,"_out.nc")), 
@@ -111,12 +114,15 @@ plot(r1_95_flagged[[1:4]])
 outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_smoke_p95v2.nc"))
 writeCDF(r1_95_flagged, filename = outfile)
 
+
+
+
 #### smoke_2SD_trimmed ####
 system(
   sprintf("nccopy -d9 %s %s",
           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_out.nc")),
           file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_compressed.nc"))
-.  )
+  )
 )
 
 
@@ -173,4 +179,251 @@ points(1:len, e, col = t(e_flag), pch = 16)
 
 #outfile <- file.path(rootdir, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_trimmed_p99.rds"))
 #saveRDS(r0, outfile)
+
+
+
+
+
+
+
+
+
+
+
+
+#### split p95 and 2SD to yearly ####
+# fix up issue where I was  doing everything in data_derived, and I renamed OLD
+rootdir_OLD <- "~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived_OLD_wrong_flags"
+rootdir2 <- gsub("data_derived", "working_ivan", rootdir)
+
+var_i = "smoke_p95"
+
+for(yy in 2002:2020){
+  #yy = 2001
+  system(
+    sprintf("cdo selyear,%s %s %s",
+            yy,
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_2001_2020_", var_i, "_smoke_p95v2.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_", var_i, "_smoke_p95_v1_3.nc"))
+    )
+  )
+  
+}
+# qc
+r <- terra::rast(file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_", var_i, "_smoke_p95_v1_3.nc")))
+r
+plot(r[[1:4]])
+
+var_k = "remainder_trimmed"
+for(yy in 2002:2020){
+  #yy = 2001
+  system(
+    sprintf("cdo selyear,%s %s %s",
+            yy,
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_2001_2020_", var_k, "_smoke_2SDv2.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_", var_k, "_smoke_2SD_v1_3.nc"))
+    )
+  )
+  
+}
+
+#### remove old both p95 and 2sd flag yearly ####
+# fix up issue where I was  doing everything in data_derived
+#rootdir2 <- gsub("data_derived", "working_ivan", rootdir)
+for(yy in 2004:2020){
+  #yy = 2001
+  var_i = "smoke_p95"
+  var_j = "smoke_2SD"
+   # remove the layer
+  system(
+    sprintf("ncks -L 0 %s %s",
+            file.path(rootdir_OLD, paste0("bushfiresmoke_v1_3_",yy,"_compressed_20230825_1.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_1.nc"))
+    )
+  )
+  system(
+    sprintf("ncks -C -O -x -v %s %s %s",
+            var_i,
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_1.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_2.nc"))
+    )
+  )
+  system(
+    sprintf("ncks -C -O -x -v %s %s %s",
+            var_j,
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_2.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_3.nc"))
+    )
+  )
+  
+  # ## qc
+  # r_nc <- ncdf4::nc_open(file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_3.nc")))
+  # r_nc
+  # varlist <- names(r_nc[['var']])
+  # varlist
+  # ncdf4::nc_close(r_nc)
+  # # cf
+  # r_nc <- ncdf4::nc_open(file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_1.nc")))
+  # r_nc
+  # varlist2 <- names(r_nc[['var']])
+  # varlist; varlist2
+  # ncdf4::nc_close(r_nc)
+  
+  ## NOT DONE test with compression 
+  # system(
+  #   sprintf("nccopy -d7 %s %s",
+  #           file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_3.nc")),
+  #           file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_compressed_20230825_3.nc"))
+  #   )
+  # )
+  
+  # NOT DONE test to put together first split appart
+  # var_ix <- "pm25_pred" # "remainder"
+  # system(
+  #   sprintf("cdo select,name=%s %s %s",
+  #           var_ix,
+  #           file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_3.nc")),
+  #           gsub(".nc$", paste0("_", var_ix, ".nc"),
+  #                file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_compressed_20230825_3.nc"))
+  #                )
+  #   )
+  # )
+
+  system(
+    sprintf("cdo merge %s %s %s",
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_3.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_pm25_pred_", var_i, "_v1_3.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_4.nc"))
+    )
+  )
+  ## NB cat fails with different number of variables, use merge
+  system(
+    sprintf('ncrename -h -O -v bushfiresmoke_v1_3_2001_2020_pm25_pred_smoke_p95v2,smoke_p95_v1_3 %s',
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_4.nc"))
+            )
+  )
+  
+  ### now do the other flags
+  system(
+    sprintf("cdo merge %s %s %s",
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_4.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_remainder_trimmed_", var_j, "_v1_3.nc")),
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_5.nc"))
+    )
+  )
+
+  system(
+    sprintf('ncrename -h -O -v bushfiresmoke_v1_3_2001_2020_remainder_trimmed_smoke_2SDv2,trimmed_smoke_2SD_v1_3 %s',
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_5.nc"))
+    )
+  )
+  
+  # final step: compress and publish the result
+
+  system(
+    sprintf("nccopy -d7 %s %s",
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_5.nc")),
+            file.path("~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived", paste0("bushfiresmoke_v1_3_",yy,"_compressed_20230825_6.nc"))
+    )
+  )
+
+  
+  # clean up 
+  system(
+    sprintf("rm %s",
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_1.nc"))
+    )
+  )
+  system(
+    sprintf("rm %s",
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_2.nc"))
+    )
+  )
+  system(
+    sprintf("rm %s",
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_3.nc"))
+    )
+  )
+  system(
+    sprintf("rm %s",
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_4.nc"))
+    )
+  )
+  system(
+    sprintf("rm %s",
+            file.path(rootdir2, paste0("bushfiresmoke_v1_3_",yy,"_uncompressed_20230825_5.nc"))
+    )
+  )
+
+  
+}
+
+# qc
+qc <- FALSE
+if(qc){
+  shpdir <- "~/cloudstor/Shared/Environment_General/ABS_data/ABS_Census_2016/abs_sa1_2016_data_provided"
+  shpfile <- "SA1_2016_AUST.shp"
+  sa1_todo_shp <- terra::vect(file.path(shpdir, shpfile))
+  unique(sa1_todo_shp$GCC_CODE16)[grep("G", unique(sa1_todo_shp$GCC_CODE16))]
+  sa1_todo_shp <- sa1_todo_shp[sa1_todo_shp$GCC_CODE16 %in% c("1GSYD", "2GMEL", "3GBRI", "4GADE", "5GPER", "6GHOB", "7GDAR", "8ACTE"),]
+  sa1_todo_shp <- st_as_sf(sa1_todo_shp)
+  sa1_todo_shpv2 <- st_transform(sa1_todo_shp, crs = "EPSG:3577")
+  xy <- st_coordinates(st_centroid(sa1_todo_shpv2))
+  str(xy)
+  sa1_todo_shpv3 <- data.table(st_drop_geometry(sa1_todo_shpv2), xy)
+  xy1 <- sa1_todo_shpv3[,.(GCC_CODE16, X = mean(X), Y = mean(Y)), by = "GCC_CODE16"]
+  # I suspect Brisbane and Hobart are xy in the ocean
+  write.csv(xy1, "working_ivan/qc_gcc_xy.csv", row.names = F)
+  # yes that is the case so add a few 1000 m to northing 
+  xy1 <- sa1_todo_shpv3[,.(GCC_CODE16, X = mean(X), Y = mean(Y)+6000), by = "GCC_CODE16"]
+  xy <- cbind(xy1[,c("X", "Y")])
+  setDF(xy)
+  fs <- dir("~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived", full.names = T)
+
+  r_nc <- ncdf4::nc_open(fs[3])
+  r_nc
+  varlist <- names(r_nc[['var']])
+  # excclude lon, lat and crs
+  varlist <- varlist[3:length(varlist)]
+  varlist
+  ncdf4::nc_close(r_nc)
+  r1 <- terra::rast(fs, subds="pm25_pred")
+  r2 <- terra::rast(fs, subds="trimmed_smoke_2SD_v1_3")
+  #names(r1)
+  
+  #plot(r2[[1]])
+  #xy <- cbind(1545315, -3954140)# this is canberra
+  pm25_pred <- extract(r1, as.matrix(xy))# c(1747771, -3821204)) #xy[1,])
+  length(pm25_pred)
+  pm25_pred0 <- data.table(t(pm25_pred))
+  names(pm25_pred0) <- paste0(xy1$GCC_CODE16, "_pm25_pred")
+  head(pm25_pred0)
+  # pm25_pred <- as.numeric(pm25_pred)
+  pm25_pred0[pm25_pred0 == 0] <- NA
+  
+  trimmed_smoke_2SD_v1_3 <- extract(r2, as.matrix(xy))# c(1747771, -3821204)) #xy[1,])
+  length(trimmed_smoke_2SD_v1_3)
+  trimmed_smoke_2SD_v1_3 <- data.table(t(trimmed_smoke_2SD_v1_3))
+  names(trimmed_smoke_2SD_v1_3) <- paste0(xy1$GCC_CODE16, "_trimmed_smoke_2SD_v1_3")
+  
+  # trimmed_smoke_2SD_v1_3 <- extract(r2, xy)
+  # trimmed_smoke_2SD_v1_3 <- as.numeric(trimmed_smoke_2SD_v1_3)
+  s1_toplot <- data.frame(date = time(r1), pm25_pred0, trimmed_smoke_2SD_v1_3)
+  head(s1_toplot); tail(s1_toplot)
+  #table(s1_toplot$trimmed_smoke_2SD_v1_3)
+  
+  par(mfrow = c(2,4))
+  
+  for(ii in 2:9){#c(2,3,5,6,8,9)){
+    #ii = 7
+    i <- names(s1_toplot)[ii]
+    i2 <- names(s1_toplot)[ii + 8]
+    idx <- substr(s1_toplot$date, 1, 4) == 2004
+    plot(s1_toplot[idx,"date"], s1_toplot[idx,i], type = "l")
+    points(s1_toplot[,"date"], s1_toplot[,i], col = s1_toplot[,i2]+1, pch = 16)
+    title(i)
+    }
+  
+  
+}
 
