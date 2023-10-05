@@ -23,33 +23,30 @@ def main(ncpath, latitude, longitude):
     dataset = rio.open(ncpath)
     subdatasets = dataset.subdatasets
 
+    selected = None
+
     if subdatasets:
         # process individual datasets
         # push processing out to func to work specifically with one datasets?
 
         sd_path = subdatasets[0]  # TODO: loop through sub datasets
         sub_dataset = rio.open(sd_path)
+        selected = sub_dataset
         _verify_crs(sub_dataset)
-
-        # TODO: handle logic for multi coords???
-        x_albers, y_albers = wgs84_to_gda94_coord([longitude], [latitude])
-
-        # tricky: use zip() to combine coordinate sequences as pairs
-        xy_coords_albers = tuple(zip(x_albers, y_albers))
-
-        # index() takes individual X,Y coords
-        xy_indices = sub_dataset.index(*xy_coords_albers[0])
-
-        print(f"lat/long: {latitude, longitude}")
-        print(f"\nx & y albers: {x_albers, y_albers}")
-        print(f"xy_coords_albers: {xy_coords_albers}")
-        print(f"xy_indices: {xy_indices}")
-
+        xy_coords_albers, xy_indices = get_xy_indexes(sub_dataset, latitude, longitude)
         sub_dataset.close()
     else:
         # TODO: Implement handling with no subdatasets
         _verify_crs(dataset)
-        raise NotImplementedError("TODO")
+        selected = dataset
+        xy_coords_albers, xy_indices = get_xy_indexes(dataset, latitude, longitude)
+
+    # output
+    print(f"Using {selected.name}")
+    print(f"lat/long: {latitude, longitude}")
+    #print(f"\nx & y albers: {x_albers, y_albers}")
+    print(f"xy_coords_albers: {xy_coords_albers}")
+    print(f"xy_indices: {xy_indices}")
 
     dataset.close()
 
@@ -63,8 +60,19 @@ def _verify_crs(dataset):
         raise ExtractError(msg)
 
 
+def get_xy_indexes(dataset, latitude, longitude):
+    """Returns (X,Y) Albers & cell indexes given lat/long to select a grid square."""
+    # TODO: handle logic for multi coords???
+
+    x_albers, y_albers = wgs84_to_gda94_coord([longitude], [latitude])
+    xy_coords_albers = tuple(zip(x_albers, y_albers))
+    xy_indices = dataset.index(*xy_coords_albers[0])  # takes individual X,Y coords
+    return xy_coords_albers, xy_indices
+
+
 class ExtractError(Exception):
     pass
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
