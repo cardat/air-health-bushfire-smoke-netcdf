@@ -59,7 +59,7 @@ def _verify_crs(dataset):
         msg = f"{dataset.name} has no CRS, cannot do coordinate transforms"
         raise ExtractError(msg)
     elif dataset.crs != GDA94_CRS:
-        msg = f"{dataset.name} not in GDA94 CRS (using {sub_dataset.crs})"
+        msg = f"{dataset.name} not in GDA94 CRS (using {dataset.crs})"
         raise ExtractError(msg)
 
 
