@@ -27,15 +27,9 @@ def main(ncpath, latitude, longitude):
         # process individual datasets
         # push processing out to func to work specifically with one datasets?
 
-        sd_path = subdatasets[0]
+        sd_path = subdatasets[0]  # TODO: loop through sub datasets
         sub_dataset = rio.open(sd_path)
-
-        if sub_dataset.crs is None:
-            msg = "Sub dataset has no CRS, cannot do coordinate transforms"
-            raise NotImplementedError(msg)
-        elif sub_dataset.crs != GDA94_CRS:
-            msg = f"Sub dataset not in GDA94 CRS (using {sub_dataset.crs})"
-            raise NotImplementedError(msg)
+        _verify_crs(sub_dataset)
 
         # TODO: handle logic for multi coords???
         x_albers, y_albers = wgs84_to_gda94_coord([longitude], [latitude])
@@ -52,21 +46,25 @@ def main(ncpath, latitude, longitude):
         print(f"xy_indices: {xy_indices}")
 
         sub_dataset.close()
-
     else:
-        raise NotImplementedError("Implement handling with no subdatasets")
+        # TODO: Implement handling with no subdatasets
+        _verify_crs(dataset)
+        raise NotImplementedError("TODO")
 
     dataset.close()
 
 
-# ~ def TODO(dataset):
-    # ~ # given an open dataset, return the CRS & geotransform data
-    # ~ crs = dataset.crs
-    # ~ geotransform = dataset.transform
+def _verify_crs(dataset):
+    if dataset.crs is None:
+        msg = f"{dataset.name} has no CRS, cannot do coordinate transforms"
+        raise ExtractError(msg)
+    elif dataset.crs != GDA94_CRS:
+        msg = f"{dataset.name} not in GDA94 CRS (using {sub_dataset.crs})"
+        raise ExtractError(msg)
 
-    # ~ if crs
-    # ~ pass
 
+class ExtractError(Exception):
+    pass
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
