@@ -22,7 +22,6 @@ def main(ncpath, latitude, longitude):
     """TODO: docs"""
     dataset = rio.open(ncpath)
     subdatasets = dataset.subdatasets
-
     selected = None
 
     if subdatasets:
@@ -33,20 +32,20 @@ def main(ncpath, latitude, longitude):
         sub_dataset = rio.open(sd_path)
         selected = sub_dataset
         _verify_crs(sub_dataset)
-        xy_coords_albers, xy_indices = get_xy_indexes(sub_dataset, latitude, longitude)
+        xy_coords_albers, col_row_indices = get_xy_indexes(sub_dataset, latitude, longitude)
         sub_dataset.close()
     else:
         # TODO: Implement handling with no subdatasets
         _verify_crs(dataset)
         selected = dataset
-        xy_coords_albers, xy_indices = get_xy_indexes(dataset, latitude, longitude)
+        xy_coords_albers, col_row_indices = get_xy_indexes(dataset, latitude, longitude)
 
     # output
     print(f"Using {selected.name}")
     print(f"lat/long: {latitude, longitude}")
     #print(f"\nx & y albers: {x_albers, y_albers}")
     print(f"xy_coords_albers: {xy_coords_albers}")
-    print(f"xy_indices: {xy_indices}")
+    print(f"col_row_indices: {col_row_indices}")
 
     dataset.close()
 
@@ -61,13 +60,13 @@ def _verify_crs(dataset):
 
 
 def get_xy_indexes(dataset, latitude, longitude):
-    """Returns (X,Y) Albers & cell indexes given lat/long to select a grid square."""
+    """Returns (X,Y) Albers & (col,row) cell indexes given lat/long to select a grid square."""
     # TODO: handle logic for multi coords???
 
     x_albers, y_albers = wgs84_to_gda94_coord([longitude], [latitude])
     xy_coords_albers = tuple(zip(x_albers, y_albers))
-    xy_indices = dataset.index(*xy_coords_albers[0])  # takes individual X,Y coords
-    return xy_coords_albers, xy_indices
+    row, col = dataset.index(*xy_coords_albers[0])  # takes individual X,Y coords
+    return xy_coords_albers, (col, row)  # reverse order for GDAL tools
 
 
 class ExtractError(Exception):
