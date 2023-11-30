@@ -9,7 +9,9 @@ config <- yaml::read_yaml("config.yaml")
 # tar_source()
 sapply(dir("R", full.names = T, pattern = ".R$"), source)
 load_packages(T)
-
+## only use this version of stars (not greater or less than)
+require(devtools)
+install_version("stars", version = "0.6-1", repos = "http://cran.us.r-project.org")
 ## The Pipeline
 tar_visnetwork(targets_only = T,
                         level_separation = 200)

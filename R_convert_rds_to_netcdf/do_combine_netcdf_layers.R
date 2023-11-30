@@ -358,10 +358,10 @@ for(yy in 2004:2020){
   
 }
 
-# qc
+#### qc v6 ####
 qc <- FALSE
 if(qc){
-  shpdir <- "~/cloudstor/Shared/Environment_General/ABS_data/ABS_Census_2016/abs_sa1_2016_data_provided"
+  shpdir <- "~/cloud-car-dat/Environment_General/ABS_data/ABS_Census_2016/abs_sa1_2016_data_provided"
   shpfile <- "SA1_2016_AUST.shp"
   sa1_todo_shp <- terra::vect(file.path(shpdir, shpfile))
   unique(sa1_todo_shp$GCC_CODE16)[grep("G", unique(sa1_todo_shp$GCC_CODE16))]
@@ -427,3 +427,31 @@ if(qc){
   
 }
 
+#### fix missings appearing as zero ####
+## cdo -setctomiss,0 input output
+## https://code.mpimet.mpg.de/boards/1/topics/8452
+fs <- dir("~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived", full.names = T)
+for(i in length(fs)){
+#i = 1
+  print(basename(fs[i]))
+file.copy(fs[i], file.path("data_derived", basename(fs[i])))
+system(
+  ## cdo -setctomiss,0
+##  cat(
+  sprintf('ncap2 -s "where(pm25_pred < 0.1) pm25_pred = missval"  %s %s',
+          file.path("data_derived", basename(fs[i])),
+          file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                         "uncompressed_20231130_7.nc", basename(fs[i])))
+  )
+)
+system(
+  ##  cat(
+  sprintf("nccopy -d7 %s %s",
+          file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                         "uncompressed_20231130_7.nc", basename(fs[i]))),
+          file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                         "compressed_20231130_7.nc", basename(fs[i])))
+          )
+)
+        
+}
