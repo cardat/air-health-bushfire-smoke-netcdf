@@ -433,25 +433,166 @@ if(qc){
 fs <- dir("~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived", full.names = T)
 for(i in length(fs)){
 #i = 1
-  print(basename(fs[i]))
-file.copy(fs[i], file.path("data_derived", basename(fs[i])))
-system(
-  ## cdo -setctomiss,0
-##  cat(
-  sprintf('ncap2 -s "where(pm25_pred < 0.1) pm25_pred = missval"  %s %s',
-          file.path("data_derived", basename(fs[i])),
-          file.path("data_derived", gsub("compressed_20230825_6.nc", 
-                                         "uncompressed_20231130_7.nc", basename(fs[i])))
+  fname_in <- basename(fs[i])
+  print(fname_in)
+  yy <- as.integer(sub("bushfiresmoke_v1_3_([0-9]{4})_.+", "\\1", fname_in))
+  # yy
+  file.copy(fs[i], file.path("data_derived", fname_in))
+  
+  # set up variables
+  # we will extrapolate on flags by taking max in focal window (adjacent cells)
+  #   and coerce to integer
+  # extrapolate on pm2.5 values by taking mean in focal window
+  # do nothing to 'other' except merge it back
+  # also set fill/missing value for all
+  
+  if(yy >= 2003){
+    flags_todo <- c("active_fires_10000", "active_fires_100000", "active_fires_25000",
+                    "active_fires_50000", "active_fires_500000", 
+                    "dust_cams_p50", "dust_cams_p75", "dust_cams_p95",
+                    "dust_merra_2_p50", "dust_merra_2_p75", "dust_merra_2_p95",
+                    "extrapolated", "whs_12degreeC", "whs_15degreeC", "whs_18degreeC",
+                    "smoke_p95_v1_3", "trimmed_smoke_2SD_v1_3")
+  } else {
+    flags_todo <- c("active_fires_10000", "active_fires_100000", "active_fires_25000",
+                    "active_fires_50000", "active_fires_500000", 
+                    "dust_merra_2_p50", "dust_merra_2_p75", "dust_merra_2_p95",
+                    "extrapolated", "whs_12degreeC", "whs_15degreeC", "whs_18degreeC",
+                    "smoke_p95_v1_3", "trimmed_smoke_2SD_v1_3")
+  }
+  pm25_todo <- c("pm25_pred", "remainder", "seasonal", "trend")
+  other_todo <- c("prediction_out_range", "predictor_out_range")
+  
+  ## set all missing value to NaN so it can be read correctly by GIS programs and terra
+  # https://code.mpimet.mpg.de/projects/cdo/wiki/FAQ#How-can-I-set-or-change-the-missing-value-or-change-NaN-to-missing-value
+  f_setmissing <- file.path("data_derived", 
+                            gsub("compressed_20230825_6.nc", 
+                                 "uncompressed_20231130_6_a_setmissval.nc", 
+                                 fname_in))
+  system(
+    ##  cat(
+    sprintf('cdo setmissval,nan %s %s',
+            file.path("data_derived", fname_in),
+            f_setmissing
+    )
   )
-)
-system(
-  ##  cat(
-  sprintf("nccopy -d7 %s %s",
-          file.path("data_derived", gsub("compressed_20230825_6.nc", 
-                                         "uncompressed_20231130_7.nc", basename(fs[i]))),
-          file.path("data_derived", gsub("compressed_20230825_6.nc", 
-                                         "compressed_20231130_7.nc", basename(fs[i])))
-          )
-)
+  
+  ## iterate over flags, extrapolate and set to integer
+  # for the extrapolated flag, don't use max, just flag if any adjacent cell not NA
+  r_flags_extrap <- lapply(flags_todo, function(i){
+    # i <- flags_todo[1]
+    r <- terra::rast(f_setmissing, i)
+    # extrapolate NA cells with focal window
+    if(i == "extrapolated"){
+      # take sum of adjacent cells (return NA if all adjacent are NA)
+      r_extrap_sum <- focal(r, 3, "sum", na.rm = T, na.policy = "only")
+      # convert all non-NA to 1 and merge with original
+      r_extrap_sum <- r_extrap_sum %/% 10 + 1
+      r_extrap <- merge(r, r_extrap_sum)
+    } else {
+      r_extrap <- focal(r, 3, "max", na.policy = "only")
+    }
+    
+    stars_r <- stars::st_as_stars(r_extrap)
+    names(stars_r) <- i
+    
+    outf <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                           paste0("uncompressed_20231130_6_b_", i, ".nc"), fname_in))
+    write_mdim(stars_r, filename = outf)
+    
+    cat(sprintf("Saving %s %i with missing value and type integer\n", i, yy))
+    # set missing value and coerce to integer
+    outf2 <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                           paste0("uncompressed_20231130_6_b_", i, "_nonan.nc"), fname_in))
+    system(
+      ##  cat(
+      sprintf('cdo -setmissval,127 -setmissval,nan %s %s',
+              outf,
+              outf2
+      )
+    )
+    
+    outf3 <- file.path("data_derived", gsub("compressed_20230825_6.nc",
+                                            paste0("uncompressed_20231130_6_b_", i, "_nonan_int.nc"), fname_in))
+    system(
+      ##  cat(
+      sprintf("ncap2 -s '%s=byte(%s)' %s %s",
+              i, i,
+              outf2,
+              outf3
+      )
+    )
+    return(outf3)
+  })
+  # r_flags_extrap
+  
+  ## iterate over pm2.5 variables, extrapolate and set to integer
+  r_pm25_extrap <- lapply(pm25_todo, function(i){
+    # i <- pm25_todo[1]
+    r <- terra::rast(f_setmissing, i)
+    # extrapolate NA cells with focal window
+    r_extrap <- focal(r, 3, "mean", na.policy = "only")
+    stars_r <- stars::st_as_stars(r_extrap)
+    names(stars_r) <- i
+    
+    cat(sprintf("Saving %s %i extrapolation\n", i, yy))
+    outf <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                           paste0("uncompressed_20231130_6_b_", i, ".nc"), fname_in))
+    write_mdim(stars_r, filename = outf)
+    
+    # set missing value
+    cat(sprintf("Saving %s %i with missing value\n", i, yy))
+    outf2 <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                            paste0("uncompressed_20231130_6_b_", i, "_nonan.nc"), fname_in))
+    system(
+      ##  cat(
+      sprintf('cdo setmissval,nan %s %s',
+              outf,
+              outf2
+      )
+    )
+    return(outf2)
+  })
+  # r_pm25_extrap
+  
+  ## merge everything back together
+  # select other (unchanged) vars
+  system(
+    ##  cat(
+    sprintf('cdo select,name=%s %s %s',
+            paste(other_todo, collapse = ","),
+            file.path("data_derived", fname_in),
+            file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                           "uncompressed_20231130_6_b_other_nonan.nc",
+                                           fname_in))
+    )
+  )
+  # and merge with fixed rasters
+  system(
+    ##  cat(
+    sprintf('cdo merge %s %s %s %s',
+            file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                           "uncompressed_20231130_6_b_other_nonan.nc",
+                                           fname_in)),  #unchanged
+            paste(r_flags_extrap, collapse = " "),  # extrapolated flags
+            paste(r_pm25_extrap, collapse = " "),  # extrapolated pm2.5
+            file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                           "uncompressed_20231130_7.nc",
+                                           fname_in))  #output
+    )
+  )
+  
+  ## compress
+  system(
+    ##  cat(
+    sprintf("nccopy -d7 %s %s",
+            file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                           "uncompressed_20231130_7.nc",
+                                           fname_in)),
+            file.path("data_derived", gsub("compressed_20230825_6.nc", 
+                                           "compressed_20231130_7.nc",
+                                           fname_in))
+            )
+    )
         
 }
