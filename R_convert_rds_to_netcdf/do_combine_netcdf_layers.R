@@ -495,7 +495,7 @@ for(i in length(fs)){
       r_extrap_sum <- terra::focal(r, 3, "sum", na.rm = T, na.policy = "only")
       # convert all non-NA to 1 and merge with original
       r_extrap_sum <- r_extrap_sum %/% 10 + 1
-      r_extrap <- merge(r, r_extrap_sum)
+      r_extrap <- terra::merge(r, r_extrap_sum)
     } else {
       r_extrap <- terra::focal(r, 3, "max", na.policy = "only")
     }
