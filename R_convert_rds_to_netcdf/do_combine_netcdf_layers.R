@@ -432,7 +432,7 @@ if(qc){
 ## https://code.mpimet.mpg.de/boards/1/topics/8452
 fs <- dir("~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived", full.names = T)
 for(i in length(fs)){
-#i = 1
+#i = 20
   fname_in <- basename(fs[i])
   print(fname_in)
   yy <- as.integer(sub("bushfiresmoke_v1_3_([0-9]{4})_.+", "\\1", fname_in))
@@ -479,18 +479,25 @@ for(i in length(fs)){
   
   ## iterate over flags, extrapolate and set to integer
   # for the extrapolated flag, don't use max, just flag if any adjacent cell not NA
+  ## NOTE IF FAILS MIDWAY, DON'T NEED TO REDO THIS JUST NEED OUTF 
   r_flags_extrap <- lapply(flags_todo, function(i){
-    # i <- flags_todo[1]
+    outf3 <- file.path("data_derived", gsub("compressed_20230825_6.nc",
+                                            paste0("uncompressed_20231130_6_b_", i, "_nonan_int.nc"), fname_in))
+  })
+  r_flags_extrap
+  # but otherwise run from here
+  r_flags_extrap <- lapply(flags_todo, function(i){
+    # i <- flags_todo[17]
     r <- terra::rast(f_setmissing, i)
     # extrapolate NA cells with focal window
     if(i == "extrapolated"){
       # take sum of adjacent cells (return NA if all adjacent are NA)
-      r_extrap_sum <- focal(r, 3, "sum", na.rm = T, na.policy = "only")
+      r_extrap_sum <- terra::focal(r, 3, "sum", na.rm = T, na.policy = "only")
       # convert all non-NA to 1 and merge with original
       r_extrap_sum <- r_extrap_sum %/% 10 + 1
       r_extrap <- merge(r, r_extrap_sum)
     } else {
-      r_extrap <- focal(r, 3, "max", na.policy = "only")
+      r_extrap <- terra::focal(r, 3, "max", na.policy = "only")
     }
     
     stars_r <- stars::st_as_stars(r_extrap)
@@ -498,7 +505,7 @@ for(i in length(fs)){
     
     outf <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
                                            paste0("uncompressed_20231130_6_b_", i, ".nc"), fname_in))
-    write_mdim(stars_r, filename = outf)
+    stars::write_mdim(stars_r, filename = outf)
     
     cat(sprintf("Saving %s %i with missing value and type integer\n", i, yy))
     # set missing value and coerce to integer
@@ -506,23 +513,14 @@ for(i in length(fs)){
                                            paste0("uncompressed_20231130_6_b_", i, "_nonan.nc"), fname_in))
     system(
       ##  cat(
-      sprintf('cdo -setmissval,127 -setmissval,nan %s %s',
+      sprintf('cdo setmissval,nan %s %s',
               outf,
               outf2
       )
     )
     
-    outf3 <- file.path("data_derived", gsub("compressed_20230825_6.nc",
-                                            paste0("uncompressed_20231130_6_b_", i, "_nonan_int.nc"), fname_in))
-    system(
-      ##  cat(
-      sprintf("ncap2 -s '%s=byte(%s)' %s %s",
-              i, i,
-              outf2,
-              outf3
-      )
-    )
-    return(outf3)
+
+    return(outf2)
   })
   # r_flags_extrap
   
@@ -531,14 +529,14 @@ for(i in length(fs)){
     # i <- pm25_todo[1]
     r <- terra::rast(f_setmissing, i)
     # extrapolate NA cells with focal window
-    r_extrap <- focal(r, 3, "mean", na.policy = "only")
+    r_extrap <- terra::focal(r, 3, "mean", na.policy = "only")
     stars_r <- stars::st_as_stars(r_extrap)
     names(stars_r) <- i
     
     cat(sprintf("Saving %s %i extrapolation\n", i, yy))
     outf <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
                                            paste0("uncompressed_20231130_6_b_", i, ".nc"), fname_in))
-    write_mdim(stars_r, filename = outf)
+    stars::write_mdim(stars_r, filename = outf)
     
     # set missing value
     cat(sprintf("Saving %s %i with missing value\n", i, yy))
@@ -550,7 +548,7 @@ for(i in length(fs)){
               outf,
               outf2
       )
-    )
+      )
     return(outf2)
   })
   # r_pm25_extrap
