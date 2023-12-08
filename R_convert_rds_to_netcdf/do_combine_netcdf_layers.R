@@ -431,7 +431,7 @@ if(qc){
 ## cdo -setctomiss,0 input output
 ## https://code.mpimet.mpg.de/boards/1/topics/8452
 fs <- dir("~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived", full.names = T)
-for(i in length(fs)){
+for(i in 1:length(fs[-20])){
 #i = 20
   fname_in <- basename(fs[i])
   print(fname_in)
@@ -477,7 +477,7 @@ for(i in length(fs)){
     )
   )
   
-  ## iterate over flags, extrapolate and set to integer
+  ##### iterate over flags, extrapolate and set to integer #####
   # for the extrapolated flag, don't use max, just flag if any adjacent cell not NA
   ## NOTE IF FAILS MIDWAY, DON'T NEED TO REDO THIS JUST NEED OUTF 
   r_flags_extrap <- lapply(flags_todo, function(i){
@@ -524,11 +524,12 @@ for(i in length(fs)){
   })
   # r_flags_extrap
   
-  ## iterate over pm2.5 variables, extrapolate and set to integer
+  #### iterate over pm2.5 variables, extrapolate and set to integer ####
   r_pm25_extrap <- lapply(pm25_todo, function(i){
     # i <- pm25_todo[1]
     r <- terra::rast(f_setmissing, i)
     # extrapolate NA cells with focal window
+    # NOTE this uses 'queen' type contiguity
     r_extrap <- terra::focal(r, 3, "mean", na.policy = "only")
     stars_r <- stars::st_as_stars(r_extrap)
     names(stars_r) <- i
@@ -553,7 +554,7 @@ for(i in length(fs)){
   })
   # r_pm25_extrap
   
-  ## merge everything back together
+  #### merge everything back together ####
   # select other (unchanged) vars
   system(
     ##  cat(
@@ -565,7 +566,7 @@ for(i in length(fs)){
                                            fname_in))
     )
   )
-  # and merge with fixed rasters
+  #### and merge with fixed rasters ####
   system(
     ##  cat(
     sprintf('cdo merge %s %s %s %s',
@@ -580,7 +581,7 @@ for(i in length(fs)){
     )
   )
   
-  ## compress
+  #### compress ####
   system(
     ##  cat(
     sprintf("nccopy -d7 %s %s",
@@ -592,5 +593,8 @@ for(i in length(fs)){
                                            fname_in))
             )
     )
-        
+  #### clean up ####      
+  fs_to_clean <- dir("data_derived", pattern = "uncompressed", full.names = T)
+  file.remove(fs_to_clean)
+  gc()
 }
