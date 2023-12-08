@@ -596,5 +596,6 @@ for(i in 1:length(fs[-20])){
   #### clean up ####      
   fs_to_clean <- dir("data_derived", pattern = "uncompressed", full.names = T)
   file.remove(fs_to_clean)
+  file.remove(file.path("data_derived", fname_in))
   gc()
 }
