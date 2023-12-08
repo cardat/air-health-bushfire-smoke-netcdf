@@ -431,7 +431,7 @@ if(qc){
 ## cdo -setctomiss,0 input output
 ## https://code.mpimet.mpg.de/boards/1/topics/8452
 fs <- dir("~/cloudstor/Shared/Bushfire_specific_PM25_Aus_2001_2020_v1_3/data_derived", full.names = T)
-for(i in 1:length(fs[-20])){
+for(i in 1:length(fs)){
 #i = 20
   fname_in <- basename(fs[i])
   print(fname_in)
@@ -487,8 +487,20 @@ for(i in 1:length(fs[-20])){
   r_flags_extrap
   # but otherwise run from here
   r_flags_extrap <- lapply(flags_todo, function(i){
-    # i <- flags_todo[17]
+    gc()
+    # i <- flags_todo[14]
     r <- terra::rast(f_setmissing, i)
+    
+    # trimmed_smoke_2SD_v1_3 lost NAs when saved to v6
+    if (i == "trimmed_smoke_2SD_v1_3"){
+      # borrow NAs from smoke_p95 raster
+      r_smoke_p95 <- terra::rast(f_setmissing, "smoke_p95_v1_3")
+      r_fixed <- terra::ifel(is.na(r_smoke_p95), r_smoke_p95, r)
+      
+      r <- r_fixed
+      rm(r_fixed, r_smoke_p95); gc()
+    }
+    
     # extrapolate NA cells with focal window
     if(i == "extrapolated"){
       # take sum of adjacent cells (return NA if all adjacent are NA)
@@ -499,15 +511,17 @@ for(i in 1:length(fs[-20])){
     } else {
       r_extrap <- terra::focal(r, 3, "max", na.policy = "only")
     }
-    
+    rm(r); gc()
     stars_r <- stars::st_as_stars(r_extrap)
+    rm(r_extrap); gc()
     names(stars_r) <- i
     
+    stars_r <- stars::st_as_stars(stars_r)
     outf <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
                                            paste0("uncompressed_20231130_6_b_", i, ".nc"), fname_in))
-    stars::write_mdim(stars_r, filename = outf)
+    stars::write_mdim(stars::st_as_stars(stars_r), filename = outf)
     
-    cat(sprintf("Saving %s %i with missing value and type integer\n", i, yy))
+    cat(sprintf("Saving %s %i with missing value\n", i, yy))
     # set missing value and coerce to integer
     outf2 <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
                                            paste0("uncompressed_20231130_6_b_", i, "_nonan.nc"), fname_in))
@@ -524,16 +538,21 @@ for(i in 1:length(fs[-20])){
   })
   # r_flags_extrap
   
-  #### iterate over pm2.5 variables, extrapolate and set to integer ####
+  ####iterate over pm2.5 variables, extrapolate and set to integer ####
   r_pm25_extrap <- lapply(pm25_todo, function(i){
+    gc()
     # i <- pm25_todo[1]
     r <- terra::rast(f_setmissing, i)
     # extrapolate NA cells with focal window
     # NOTE this uses 'queen' type contiguity
     r_extrap <- terra::focal(r, 3, "mean", na.policy = "only")
+    
+    rm(r); gc()
     stars_r <- stars::st_as_stars(r_extrap)
+    rm(r_extrap); gc()
     names(stars_r) <- i
     
+    stars_r <- stars::st_as_stars(stars_r)
     cat(sprintf("Saving %s %i extrapolation\n", i, yy))
     outf <- file.path("data_derived", gsub("compressed_20230825_6.nc", 
                                            paste0("uncompressed_20231130_6_b_", i, ".nc"), fname_in))
@@ -560,7 +579,7 @@ for(i in 1:length(fs[-20])){
     ##  cat(
     sprintf('cdo select,name=%s %s %s',
             paste(other_todo, collapse = ","),
-            file.path("data_derived", fname_in),
+            f_setmissing,
             file.path("data_derived", gsub("compressed_20230825_6.nc", 
                                            "uncompressed_20231130_6_b_other_nonan.nc",
                                            fname_in))
