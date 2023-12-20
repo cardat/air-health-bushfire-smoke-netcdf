@@ -32,7 +32,9 @@ wgs84_to_gda94_coord = functools.partial(warp.transform, WGS84_CRS, GDA94_CRS)
 
 # FIXME: if development resumes, try the xarray library to interface with NetCDFs
 def main(ncpath, latitude, longitude):
-    """TODO: docs"""
+    """
+    Opens a NetCDF dataset & extracts example subsets from each data variable.
+    """
     dataset = rio.open(ncpath)
     subdatasets = dataset.subdatasets
     selected = None
