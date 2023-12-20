@@ -94,6 +94,9 @@ def main(ncpath, latitude, longitude):
         selected = dataset
         xy_coords_albers, col_row_indices = get_xy_indexes(dataset, latitude, longitude)
 
+        msg = "Example code doesn't handle data without variables as subdatasets"
+        raise NotImplementedError(msg)
+
     # output
     print(f"\nUsing {selected.name}")
     print(f"lat/long: {latitude, longitude}")
