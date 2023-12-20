@@ -1,3 +1,12 @@
+"""
+This is an experimental module for extracting a window subset of data for the
+Bushfire/Smoke/Health project at Curtin University.
+https://github.com/cardat/air-health-bushfire-smoke-netcdf
+
+This is the Python3/rasterio variant of some of the R tools & is incomplete as
+of December 2023.
+"""
+
 import sys
 import argparse
 import functools
@@ -21,6 +30,7 @@ DEFAULT_YWIN_SIZE = 2
 wgs84_to_gda94_coord = functools.partial(warp.transform, WGS84_CRS, GDA94_CRS)
 
 
+# FIXME: if development resumes, try the xarray library to interface with NetCDFs
 def main(ncpath, latitude, longitude):
     """TODO: docs"""
     dataset = rio.open(ncpath)
